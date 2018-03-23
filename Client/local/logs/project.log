@@ -1,0 +1,55 @@
+2018-03-23T12:24:14.639Z - normal: Load ~/.CocosCreator/settings.json
+2018-03-23T12:24:14.649Z - normal: checking language setting...
+2018-03-23T12:24:14.649Z - normal: Language: zh
+2018-03-23T12:24:16.531Z - success: protocol editor-framework registered
+2018-03-23T12:24:16.531Z - success: protocol app registered
+2018-03-23T12:24:16.531Z - success: protocol theme registered
+2018-03-23T12:24:16.531Z - success: protocol packages registered
+2018-03-23T12:24:16.531Z - success: protocol unpack registerred
+2018-03-23T12:24:16.531Z - success: protocol disable-commonjs registerred
+2018-03-23T12:24:16.841Z - normal: connected!
+2018-03-23T12:24:16.851Z - normal: Check project F:\ShareGame\Client
+2018-03-23T12:24:16.861Z - normal: Initializing Cocos2d
+2018-03-23T12:24:17.101Z - normal: Initializing Asset Database
+2018-03-23T12:24:17.161Z - success: protocol uuid registerred
+2018-03-23T12:24:17.161Z - success: protocol db registerred
+2018-03-23T12:24:17.161Z - success: protocol thumbnail registerred
+2018-03-23T12:24:17.161Z - normal: Loading editor/builtin packages
+2018-03-23T12:24:17.181Z - success: anysdk loaded
+2018-03-23T12:24:17.311Z - success: assets loaded
+2018-03-23T12:24:17.321Z - success: builder loaded
+2018-03-23T12:24:17.321Z - success: cocos-analytics loaded
+2018-03-23T12:24:17.321Z - success: console loaded
+2018-03-23T12:24:17.331Z - success: hierarchy loaded
+2018-03-23T12:24:17.331Z - success: inspector loaded
+2018-03-23T12:24:17.331Z - success: keystore loaded
+2018-03-23T12:24:17.331Z - success: node-library loaded
+2018-03-23T12:24:17.341Z - success: package-asset loaded
+2018-03-23T12:24:17.341Z - success: preferences loaded
+2018-03-23T12:24:17.341Z - success: project-exporter loaded
+2018-03-23T12:24:17.361Z - success: project-importer loaded
+2018-03-23T12:24:17.361Z - success: project-settings loaded
+2018-03-23T12:24:17.361Z - success: ui-kit loaded
+2018-03-23T12:24:17.371Z - success: ui-grid loaded
+2018-03-23T12:24:17.371Z - success: scene loaded
+2018-03-23T12:24:17.371Z - success: sprite-editor loaded
+2018-03-23T12:24:17.371Z - success: store loaded
+2018-03-23T12:24:17.381Z - success: timeline loaded
+2018-03-23T12:24:17.381Z - normal: Loading builtin packages
+2018-03-23T12:24:17.381Z - success: asset-db-debugger loaded
+2018-03-23T12:24:17.381Z - success: code-editor loaded
+2018-03-23T12:24:17.391Z - success: color-picker loaded
+2018-03-23T12:24:17.391Z - success: package-manager loaded
+2018-03-23T12:24:17.391Z - success: sdkbox loaded
+2018-03-23T12:24:17.401Z - success: tester loaded
+2018-03-23T12:24:17.401Z - success: ui-kit-preview-extra loaded
+2018-03-23T12:24:17.401Z - success: ui-kit-preview loaded
+2018-03-23T12:24:17.401Z - success: ui-tree loaded
+2018-03-23T12:24:18.618Z - normal: Initializing project F:\ShareGame\Client
+2018-03-23T12:24:18.628Z - normal: Loading packages
+2018-03-23T12:24:18.758Z - success: unpack-textureatlas loaded
+2018-03-23T12:24:18.758Z - normal: Watching packages
+2018-03-23T12:24:18.778Z - normal: Run Application
+2018-03-23T12:24:19.964Z - success: preview server running at http://localhost:7456
+2018-03-23T12:24:25.886Z - normal: 1.7.0
+2018-03-23T12:24:33.605Z - info: shutdown preview server
