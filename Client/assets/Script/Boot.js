@@ -18,10 +18,14 @@ cc.Class({
     },
 
     onStartButtonClick(node){
-        var isNull = app.isNullOrEmpty(this);
-        if(isNull == false){
-            var instance = HttpHandler.instance();
-            instance.post("www.baidu.com");
+        var user = {
+            name : "asdffasdf",
+            password : "111111111",
+            addr : "52541aaaa"
         }
+        var instance = HttpHandler.instance();
+        instance.post("http://localhost:12345/auth", function(err, data){
+            cc.log(data);
+        }, JSON.stringify(user), false);
     }
 });

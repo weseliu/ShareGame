@@ -17,8 +17,8 @@ var HttpHandler = cc.Class({
     },
 
     _loadTxtByPost : function(url, cb, data) {
-        var xhr = cc.loader.getXMLHttpRequest(),
-            errInfo = "load " + url + " failed!";
+        var xhr = cc.loader.getXMLHttpRequest();
+        var errInfo = "load " + url + " failed!";
 
         var params = "";
         if (typeof(data) == "object") {
@@ -30,11 +30,12 @@ var HttpHandler = cc.Class({
         }
         xhr.open("POST", url, true);
 
+        xhr.responseType = "text";
         if (xhr.overrideMimeType) {
             xhr.overrideMimeType("text\/plain; charset=utf-8");
         }
 
-        xhr.onload = function () {
+        xhr.onload  = function () {
             if (xhr.readyState === 4)
                 xhr.status === 200 ? cb(null, xhr.responseText) : cb({
                     status: xhr.status,
@@ -43,7 +44,9 @@ var HttpHandler = cc.Class({
         };
 
         xhr.onerror = function () {
-            cb({status: xhr.status, errorMessage: errInfo}, null);
+            if(cc.isFunction(cb)){
+                cb({status: xhr.status, errorMessage: errInfo}, null);
+            }
         };
         xhr.send(params);
     },
@@ -51,7 +54,9 @@ var HttpHandler = cc.Class({
     post : function(url, cb, data, isText) {
         this._loadTxtByPost(url, function (err, txt) {
             if (err) {
-                cb(err,null);
+                if(cc.isFunction(cb)){
+                    cb(err,null);
+                }
             }
             else {
                 try {
@@ -64,7 +69,6 @@ var HttpHandler = cc.Class({
                 }
                 catch (e) {
                     cb({msg:e},null);
-                    //throw new Error("parse json [" + url + "] failed : " + e);
                     return;
                 }
                 cb(null, result);
