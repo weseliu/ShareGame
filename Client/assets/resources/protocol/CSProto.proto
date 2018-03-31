@@ -1,0 +1,2136 @@
+
+syntax="proto3";
+
+package CSProto;
+
+message packc
+{
+	int32 cmd = 1;
+	uint32 seq_id = 2;
+	bytes body = 3;	
+}
+
+message packs
+{
+	int32 cmd = 1;
+	uint32 seq_id = 2;
+	bytes body = 3;	
+}
+
+
+
+enum CommandType
+{
+	CMD_ZERO_PLACEHOLDER = 0;            //0值占位符
+
+	// 通用基础
+	CMD_ERROR = 101;                        //通用错误提示协议
+	CMD_TEST_ECHO = 102;                    //测试命令字echo
+	CMD_GM = 105;                           //特殊gm请求
+
+	// 角色登录控制及房间管理基础
+	CMD_ALOGIN = 200;                       //账户登录
+	CMD_ALOGOUT = 201;                      //账户登出请求
+	CMD_PING = 202;                         //心跳包
+	CMD_KICKOFF_ACCOUNT = 203;              //服务器主动踢账户下线
+	CMD_WARP = 204;                         //通知帐户登录后所在的场景
+	CMD_NTF_ENTERVIEW = 205;                //广播消息,通知周围的人角色进入桌台
+	CMD_NTF_LEAVEVIEW = 206;                //广播消息,通知周围的人角色离开桌台
+	CMD_SCENE_HISTORY_CHATMSG = 207;        //场景中的历史聊天记录
+	CMD_ENTER_SCENE = 208;                  //请求进入具体场景
+	CMD_CREATE_ROLE = 209;                  //创建角色
+	CMD_QUICK_START = 210;                  //快速开始
+	CMD_GET_SCENE_INFO = 211;               //获取场景信息
+
+	// 角色数据
+	CMD_ROLE_MISC = 300;                    //角色混杂数据
+	CMD_ROLE_FIN = 301;                     //登录下发的所有角色信息结束
+	CMD_ATT_CHANGE = 302;                   //角色属性变化通知
+
+	// 邮件
+	CMD_GET_MAILLIST = 401;                 //获取邮件列表信息
+	CMD_GET_MAILATTACH = 402;               //获取邮件的附件
+	CMD_MAILSTAT_CHANGE = 403;              //通知服务器邮件变为己读等等状态的变更
+
+	// 充值
+	CMD_NOTIFY_CHARGESUCC = 501;            //服务器通知客户端充值成功
+	CMD_PAYCENTER_GEN_ORDER = 502;          //游戏内自有支付中心生成内部CP支付订单协议目前仅支持部分支付平台方式
+	CMD_PAYCENTER_NOTIFY_SERVER_SUCC = 503; //客户端收到第三方支付中心支付成功的回调后立刻通知到服务器以便对帐
+	CMD_PAYCENTER_NOTIFY_CLIENT_SUCC = 504; //服务器收到第三方支付中心支付成功并发货后通知到客户端
+	CMD_PAYCENTER_PREPAID_CARD_DOPAY = 505; //预付卡填入卡号密码后确认支付
+	CMD_APPSTORE_PAYRECEPIT_VERIFY = 506;   //未完成苹果支付成功后返回的支付订单数据较验
+
+	// 手机绑定相关
+	CMD_REQ_BIND_SMSCODE = 601;             //申请获取绑定手机的验证码
+	CMD_CONFIRM_BIND_SMSCODE = 602;         //输入验证绑定手机的验证码
+	CMD_DO_UNBIND_CURMOBILE = 603;          //解绑当前手机绑定的手机号码
+	CMD_DO_BIND_MOBILE = 604;               //执行操作绑定输入的手机号码
+	CMD_DO_REPLACE_ACCOUNT = 605;           //执行帐号迁移操作
+
+	// 其他
+	CMD_RANK_QUERYPAGE = 701;               //查询排行榜分页
+	CMD_NEWMSG_TAG = 702;                   //上行清除打点系统标记,下行则是通知当前打点列表
+	CMD_UPLOAD_HEADPHOTO = 703;             //上传头像
+	CMD_CHANGE_HEADPHOTO = 704;             //改变当前头像
+	CMD_MODIFY_SELFPROP = 705;              //修改性别等属性
+	CMD_MODIFY_NICK = 706;                  //修改昵称but目前后台还没有判断唯一性
+	CMD_SKIP_NEWERGUIDE = 707;              //跳过新手引导
+	CMD_CHAT = 708;                         //消息频道聊天,包括系统频道
+	CMD_ADD_PHOTO = 709;                    //添加照片
+	CMD_DEL_PHOTO = 710;                    //删除照片
+	CMD_CONLOGIN_GIFT = 711;                //连续登录礼包信息
+	CMD_GET_CONLOGIN_GIFT = 712;            //领取连续登陆奖励
+	CMD_GET_UPLOAD_FILE_TOKEN = 713;        //获取上传文件令牌
+	CMD_UPLOAD_FILE_COMPLETED = 714;        //上传文件完成
+	CMD_MODIFY_SIGNATURE = 715;             //修改个性签名
+	CMD_USE_MAGIC_EXPRESSION = 716;         //使用魔法表情
+	CMD_FINISH_NEWERGUIDE = 717;            //完成新手引导
+
+	// 德州扑克
+	CMD_DZ_ENTER_DATA = 801;                //德州进入时的相关数据
+	CMD_DZ_BEGIN_GAME = 802;                //游戏开始
+	CMD_DZ_BEGIN_CIRCLE = 803;              //开始新的一圈
+	CMD_DZ_END_GAME = 804;                  //游戏结束
+	CMD_DZ_CHANGE_ROOM = 805;               //换桌
+	CMD_DZ_UPDATE_TABLE_DATA = 806;         //刷新桌台数据
+	CMD_DZ_UPDATE_PLAYER_DATA = 807;        //刷新玩家数据
+	CMD_DZ_READY = 808;                     //德州玩家准备(暂时不用)
+	CMD_DZ_SIT_DOWN = 809;                  //德州玩家坐下
+	CMD_DZ_STAND_UP = 810;                  //德州玩家战起
+	CMD_DZ_BETON = 811;                     //德州玩家下注
+	CMD_DZ_DISCARD = 812;                   //德州玩家弃牌
+	CMD_DZ_BUY_CHIPS = 813;                 //买入筹码
+	CMD_DZ_AUTO_SIT_DOWN_INFO = 814;        //自动入座信息
+	CMD_DZ_QUICK_START = 815;               //快速开始
+	CMD_DZ_REWARD_DEALER = 816;             //打赏荷官
+	CMD_DZ_DEALER_SPEAK = 817;              //服务器通知客户端，让荷官说话
+	CMD_DZ_SHOW_CARD_WHEN_END = 818;        //结束时亮牌
+	CMD_DZ_NOTIFY_TILI_GAME_CYCLE_END = 819;//通知体力场当前赛季结束
+	CMD_GET_DZ_TILI_INFO = 820;                //获取我当前的体力
+	CMD_GET_DZ_TILI_CYCLE_RANK_INFO = 821;     //获取体力场赛季排行信息
+	CMD_GET_DZ_TILI_CYCLE_AWARD_INFO = 822;    //获取体力场赛季奖励信息
+	CMD_NOTIFY_MY_DZ_TILI_CYCLE_INFO = 823;    //通知我的体力场赛季信息
+	CMD_NOTIFY_QUIT_DZ_TILI_GAME_INFO = 824;   //退出体力场后通知弹窗
+	CMD_DZ_ACTIVE_PLAYER_CHANGE = 825;         //活跃玩家改变
+
+	// 好友系统
+	CMD_GET_PLAYER_BASIC_INFO = 901;        //获取玩家基本信息
+	CMD_GET_PLAYER_DETAILED_INFO = 902;     //获取玩家详细信息(包括基本信息，牌技信息)
+	CMD_GET_PLAYER_FULL_INFO = 903;         //获取玩家全量信息(包括基本信息，牌技信息，社交信息)
+	CMD_GET_FOLLOW_LIST = 904;              //获取关注列表
+	CMD_DEL_FOLLOW_INFO = 905;              //删除关注信息
+	CMD_FORBID_BEEN_FOLLOW = 906;           //禁止被关注
+	CMD_A_FOLLOW_B = 907;                   //通知消息,A关注了B,用于牌座上的表现
+	CMD_FOLLOW_TO = 908;                    //关注某人
+	CMD_NOTIFY_DEL_FROM_FOLLOW_LIST = 909;  //服务器主动通知，客户端收到此消息，表示别人取消了我的关注，应将对方从我的关注列表中删除
+
+	// 任务系统
+	CMD_GET_TASK_LIST = 1001;               //获取任务列表
+	CMD_GET_TASK_AWARD = 1002;              //任务领奖
+
+	// 道具、商店相关
+	CMD_GET_RES_INFO = 1101;                //获取道具信息
+	CMD_GET_SHOP_INFO = 1102;               //获取商店信息
+	CMD_BUY_COMMODITY = 1103;               //购买商品
+	CMD_OPEN_GIFT_BAG = 1104;               //打开礼包
+}
+
+// 游戏中的对象类型
+enum ObjType
+{
+	OBJNONE = 0;                            //空类型
+	OBJACCOUNT = 1;                         //账户类型结构
+	OBJPLAYER = 2;                          //用户类型
+	OBJMONSTER = 3;                         //怪物类型
+	OBJITEM = 4;                            //道具类型结构
+	OBJROLEPROP = 5;                        //角色属性的抽象
+}
+
+// 各种最大值
+enum AnyMaxValue
+{
+	option allow_alias = true;
+	ANY_MAX_VALUE_ZERO_PLACEHOLDER = 0;
+
+	MAX_ERROR_MSG_LEN = 2048;              //错误消息最大长度		
+	MAX_ALOGIN_HINTMSG_LEN = 2048;         //Alogin提示消息最大长度		
+	MAX_ACCOUNT_LEN = 136;                 //帐号最大长度
+	MAX_ROLE_NAME_LEN = 32;                //名字最大长度
+	MAX_ROLE_COUNT = 3;                    //角色最大个数
+	MAX_SEND_PACK_SIZE = 30;               //一次最多发送的物品数量
+	MAX_BAG_SIZE = 64;                     //背包最大格子数
+	MAX_AWARD_SIZE = 10;                   //最大奖励数目
+	MAX_STORE_SIZE = 100;                  //仓库最大格子数
+	MAX_MINIMALL_SIZE = 8;                 //随身仓库最大格子数
+	MAX_WEAR_SIZE = 10;                    //最大装备个数
+	MAX_HYPEROBJ_NUM = 3;                  //最大超链接物件个数
+	 
+	//超链接相关常量
+	MAX_HYPERLINK_LEN = 300;                     //一段完整的超链接文本长度，包含超链接地址在内
+	MAX_HYPERLINK_COMMAND_LEN = 100;             //一条超链接地址最大长度
+	MAX_DOWNLOAD_PKG_DATA = 1000;                //单包所含最大资源长度
+	MAX_BIN_LIST_LEN = 30;                       //最多同时获取的Bin的数量
+	MAX_REQUEST_RES_COUNT = 15;                  //最大下载的资源包数
+	MAX_MD5CODE_LEN = 33;                        //MD5码长度
+	MAX_SLOTTABLE_STORE_MONEY = 3;               //桌台上最大存储的币
+	MAX_RANK_LIST_SIZE = 5;                      //排行列表最大长度
+	MAX_CHAT_MSG_LEN = 4096;                     //聊天信息的最大长度 
+	MAX_LOTTERY_HERORANK_LIST_SIZE = 10;         //摩天轮英豪榜排行列表最大长度
+	MAX_LOTTERY_SCENE_HISPRIZE_LEN = 6;          //摩天轮历史开奖最大长度
+	MAX_ONLINERANK_LIST_SIZE = 8;                //在线列表最大长度
+	MAX_HISCHAT_LIST_SIZE = 10;                  //历史聊天记录最大长度
+	MAX_CLASSICFRUIT_SCENE_HISPRIZE_LEN = 6;     //经典水果机历史开奖最大长度
+	MAX_NEWMSGTAG_LIST_LEN = 20;                 //打点系统打点列表最大长度
+	MAX_ROLE_SELFDEF_PHOTO_LEN = 256;            //自定义头像地址最大长度
+	MAX_DRAWPIZEEHIS_LIST_LEN = 20;              //抽奖历史最大长度
+	MAX_MOBILE_LEN = 21;                         //手机号最大长度
+	MAX_ROLE_SELFDEF_PIC_SIZE = 20480;           //上传头像最大大小
+	MAX_SHARK_SCENE_HISPRIZE_LEN = 8;            //鲨鱼场历史开奖最大长度
+	MAX_SHARK_BETON_LEN = 12;                    //鲨鱼场下注列表最大长度
+	MAX_ALOGIN_CAHNNLE_LEN = 64;                 //渠道号最大长度
+	MAX_DOWNLOAD_LINK_LEN = 1024;                //最大下载地址长度		
+	MAX_CAR_SCENE_HISPRIZE_LEN = 8;              //车行历史开奖最大长度
+	MAX_CAR_BETON_LEN = 8;                       //车行下注列表最大长度
+	MAX_RECOMMED_LIST_SIZE = 8;                  //推荐列表最大长度
+	MAX_BULL_SCENE_HISRESULT_LEN = 10;           //牛牛场历史结果最大长度
+	MAX_BULL_BETON_LEN = 4;                      //牛牛场下注列表最大长度
+	MAX_BULL_BAKER_QUEUE_LEN = 15;               //庄家队列最大长度
+
+	//MailServer
+	MAX_MAIL_LIST_COUNT = 6;                     //邮件列表最大长度
+	MAX_MAIL_RECV_COUNT = 50;                    //收件箱最大邮件数
+	MAX_MAIL_SEND_COUNT = 50;                    //暂不支持:发件箱最大邮件数        
+	MAX_MAIL_CONTENT_LEN = 1024;                 //邮件内容数组最大长度
+	MAX_MAIL_TITLE_LEN = 64;                     //邮件标题数组最大长度
+	MAX_MAIL_ATTACH_COUNT = 5;                   //邮件附件列表数组最大个数
+	//Mail END
+	  	 
+	MAX_PAY_PAYCODELEN = 136;                    //支付商品编码最大长度
+	MAX_PAY_VIEWCHANNEL_LEN = 10;                //支付显示渠道最大长度
+	MAX_PAY_VIVO_ORDERID_LEN = 256;              //vivo返回的订单ID最大长度
+	MAX_PAY_VIVO_ACCESSKEY_LEN = 256;            //vivo返回的accesskey最大长度
+	MAX_PAY_VIVO_APPID_LEN = 256;                //vivo的appid最大长度
+	MAX_PAY_VIVO_ORDERTITLE_LEN = 128;           //vivo的订单标题最大长度
+	MAX_PAY_VIVO_ORDERDESC_LEN = 256;            //vivo的订单描述最大长度
+	MAX_CAR_BIGWINNERRANK_LIST_SIZE = 10;        //车行大富豪排行列表最大长度
+	MAX_BULL_BIGWINNER_RANK_LIST_SIZE = 10;      //牛牛场排行最大长度
+	MAX_VIEW_OBJ_COUNT = 25;                     //最大可见角色个数
+	MAX_PAY_LENOVO_EXORDERID_LEN = 50;           //lenovo的CP订单ID最大长度
+	MAX_PAY_LENOVO_PRIVATEINFO_LEN = 128;        //lenovo的CP订单私有数据最大长度 
+	MAX_PAY_COMM_PRIVATEINFO_LEN = 256;          //游戏内部订单私有数据最大长度
+	MAX_PAY_COMM_SELFORDER_LEN = 256;            //游戏内部订单号最大长度
+	MAX_PLAYER_SIGNATURE_LEN = 100;              //个性签名最大长度
+	MAX_FRIEND_NUMBER = 100;                     //最大好友数
+	MAX_FRIEND_REQUEST_NUMBER = 100;             //最大好友请求数量(是玩家被请求的最大数量)
+	MAX_PHOTO_NUMBER = 8;                        //最大照片数量
+	MAX_PROPERTY_RES_TYPE = 100;                 //最大的存储于属性的道具类型(res_type小于此值的道具，通过属性的方式同步，具体映射关系不定，res_type不等于属性ID)
+	MAX_HIS_MAGIC_EXPRESSIONS_NUM = 3;           //最多使用历史魔法表情
+}
+
+// 消息频道的类型
+enum ChatChannel
+{
+	CHAT_CHANNEL_PLACEHOLDER = 0;
+
+	CHAT_CHANNEL_WORLD = 1;                      //若后续有聊天系统为其中的全世界频道
+	CHAT_CHANNEL_ROOM = 2;                       //本地频道
+	CHAT_CHANNEL_SYSTEM = 3;                     //若后续有聊天系统为其中的系统频道
+	CHAT_CHANNEL_LED = 4;                        //全服跑马灯滚动消息
+	CHAT_CHANNEL_DELAY_SYSTEM = 5;               //特殊系统消息当转轮在转时需要延迟显示
+	CHAT_CHANNEL_SYSTEM_ROOM = 6;                //显示到聊天窗口的系统消息
+}
+
+// 新手引导状态
+enum NewerGuideStat
+{
+	NEWER_GIDESTAT_NOTFIN = 0;                    //未完成
+	NEWER_GIDESTAT_HASFIN = 1;                    //己完成
+	NEWER_GIDESTAT_SKIPPED = 2;                   //己跳过
+}
+
+// 各种桌台类型下具体场次模板ID
+enum MapTemplateID
+{
+	MAP_TEMPLATE_ID_PLACEHOLDER = 0;
+
+	MAP_TEMPLATE_ID_HALL = 1;                    //展示大厅列表
+}
+
+// 客户端配置的支付方式类型,将渠道和类型结合的统一key
+enum PayWayType
+{
+	PAYWAY_UNKNOWN = 0;                           //未知的
+	PAYWAY_ALIPAY = 1;                            //支付宝
+	PAYWAY_WIIPAY_SMS = 2;                        //微派短信
+	PAYWAY_OTHER = 3;                             //银联或者充值卡等
+	PAYWAY_MM_SMS = 4;                            //移动MM短信
+	PAYWAY_VIVO = 5;                              //VIVO
+	PAYWAY_LENOVO = 6;                            //LENOVO
+	PAYWAY_HAIMA = 7;                             //HAIMA
+}
+
+// 用户渠道
+enum UserChannel
+{
+	USER_CHANNEL_VISITOR = 0;                     //游客
+	USER_CHANNEL_MOBILE = 1;                      //用手机号注册的用户
+}
+
+
+
+// 运营商类型
+enum OperatersTyp
+{
+    OPERATERS_TYPE_UNKNOWN = 0;                   //未知
+    OPERATERS_TYPE_MOBILE = 1;                    //移动
+    OPERATERS_TYPE_UNICOM = 2;                    //联通
+    OPERATERS_TYPE_TELECOM = 3;                   //电信
+}
+
+// 客户端平台类型
+enum CltPlatformType
+{
+    CLT_PLATFORM_TYPE_UNKNOWN = 0;                //未知
+    CLT_PLATFORM_TYPE_ANDROID = 1;                //ANDROID
+    CLT_PLATFORM_TYPE_IPHONE = 2;                //IPHONE
+}
+
+// 游戏内货币类型
+enum MoneyType
+{
+	MONEY_TYPE_PLACEHOLDER = 0;
+
+	MONEY_TYPE_GOLD = 1;                    //金币
+	MONEY_TYPE_DIAMOND = 2;                 //钻石
+}
+
+// 登录错误码
+enum LoginRet
+{
+	LOGINRESULT_SUCCESS = 0;                    //登录成功
+	LOGINRESULT_MUSTUPDATE = 1;                 //强制升级
+	LOGINRESULT_SUGGESTUPDATE = 2;              //建议升级
+	LOGINRESULT_ROLEONLINE = 3;                 //角色在线
+	LOGINRESULT_FASTLOGINFAIL = 4;              //快速登录失败
+	LOGINRESULT_SERVERSTOP = 5;                 //服务器正在停服
+	LOGINRESULT_CANNOT_TASTE = 6;               //不允许进入体验服
+	LOGINRESULT_CANNOT_ORDIN = 7;               //不允许进入非体验服		
+	LOGINRESULT_TOUCHMAXACCOUNT = 8;            //服务器己满
+	LOGINRESULT_NOTINWHITELIST = 9;             //不在白名单,无资格进入服务器
+	LOGINRESULT_COMMFAIL = 10;                  //通用登录失败错误码，建议描述写得模糊点
+	LOGINRESULT_MUST_CREATE_ROLE = 11;          //必须先创建角色
+}
+
+// 角色下线的理由
+enum RoleOfflineReason
+{
+	ROLE_OFFLINE_REASON_PLACEHOLDER = 0;
+
+	TOO_LONG_WAIT = 1;                      //超时
+	DUPLICATE_ACCOUNT = 2;                  //角色顶号
+	BAN_ACCOUNT = 3;                        //角色封号
+	NET_PROBLEM = 4;                        //网络不稳定
+	ROLE_LEAVE = 5;                         //角色非正常离开
+	SERVER_NOT_OPEN = 6;                    //服务器未开放
+	SERVER_REACH_LIMIT = 7;                 //服务器达到人数限制
+	MOVE_TOO_FAST = 8;                      //角色移动过快
+	REACH_FREQUENCY_LIMIT = 9;              //上行包超过频率
+	VERSION_NOT_MATCH = 10;                 //版本不匹配
+	PLAYER_SERVER_STOP = 11;                //服务器关服
+	PLAYER_AUTH_FAILED = 12;                //输入验证失败
+	MAIN_TASK_NOTMATCH = 13;                //客户端主线任务状态与服务器不一致
+	BIND_REPLACE_SUCC = 14;                 //绑定手机成功,请重新登录
+}
+
+
+// 玩家属性
+enum LifeAttrType
+{
+	LIFEATT_BEGIN = 0;                      //开始,仅占位,没有实际使用
+	LIFEATT_LEVEL = 1;                      //人物等级
+	LIFEATT_GOLD = 2;                       //金币
+	LIFEATT_SEX = 3;                        //性别
+	LIFEATT_DIAMOND = 4;                    //钻石
+	LIFEATT_EXP = 5;                        //经验
+	LIFEATT_HEADPHOTO = 6;                  //头像
+	LIFEATT_VIPLEVEL = 7;                   //VIP等级
+	LIFEATT_MAXEXP = 9;                     //升级所需经验
+	LIFEATT_NEWGUIDE_STAT = 10;             //新手引导状态，对应NewerGuideStat枚举
+	LIFEATT_VIPEXP = 11;                    //VIP当前经验
+	LIFEATT_MAXVIPEXP = 12;                 //VIP升级所需经验
+	LIFEATT_LASHTCHARGETIME = 13;           //上次充值时间,为0则从来没有充过
+	LIFEATT_CHARGE_ACT_BEGINTIME = 14;      //限时充值活动上次倒计时开始时间,当为0时需要通知倒计时开始,否则不用
+	LIFEATT_CHARGE_ACT_LEFTTIME = 15;       //限时充值活动上次倒计时剩余秒数,当不为0时显示倒计时,该值仅当收到金币不足的错误码下行后才是正确值
+	LIFEATT_ROLE_BORNID = 17;               //角色数字类型的出生ID
+	LIFEATT_TODAY_CHARGE_TOTAL = 22;        //本日己充值钱数
+	LIFEATT_LAST_PAYWAYTYPE = 24;           //上次支付方式类型参见PAYWAY_ALIPAY等的定义
+	LIFEATT_CHARM = 25;                     //魅力值
+	LIFEATT_ALL_GAME_COUNT = 26;            //总牌局数
+	LIFEATT_WIN_GAME_COUNT = 27;            //赢牌次数
+	LIFEATT_MAX_WIN_CHIPS = 28;             //最多赢取筹码数
+	LIFEATT_JOIN_IN_GAME_COUNT = 29;        //入局次数(主动下注的牌局数)
+	LIFEATT_SHOW_CARD_COUNT = 30;           //摊牌次数
+	LIFEATT_BEST_CARD_TYPE = 31;            //最佳牌型
+	LIFEATT_BEST_CARDS = 32;                //最佳牌(按字节记录,每字节记录一张牌,从低到高依次记录)
+	LIFEATT_AUTO_BUY_CHIPS = 33;            //筹码不足时自动补充到最大
+
+	LIFEATT_MAXVAL = 255;                   //最大值
+}
+
+// 角色性别
+enum Sex
+{
+	SEX_NONE = 0;                           //无性别
+	SEX_MALE = 1;                           //男
+	SEX_FEMALE = 2;                         //女
+	SEX_SECRET = 3;                         //保密
+}
+
+enum MsgBoxType
+{
+	MSGBOX_TYPE_NONE = 0;                   //无
+	MSGBOX_TYPE_COMMON = 1;                 //基础通用提示框
+}
+
+// 通用错误提示
+message CMD_ERROR_SC
+{
+	MsgBoxType msg_box_type = 1;            //对话框显示类型,值为MsgBoxType枚举定义
+	int32 error_code = 2;                   //错误码
+	int32 cmd_id = 3;                       //相关命令号
+ 	string title = 4;                       //标题
+ 	string content = 5;                     //内容支持富文本并需要根据真实长度自动调整对话框大小
+}
+
+// ECHO测试命令
+message CMD_TEST_ECHO_CS
+{
+	string echo_msg = 1;                     //内容
+}
+
+// ECHO测试命令
+message CMD_TEST_ECHO_SC
+{
+	string echo_msg = 1;                     //内容
+}
+
+// 特殊gm请求
+message CMD_GM_CS
+{
+	string detail = 1;
+	string detail_ext = 2;
+}
+
+// 特殊gm请求
+message CMD_GM_SC
+{
+	string ret_detail = 1;
+}
+
+// 登录
+message CMD_ALOGIN_CS
+{
+	int32 verion_type = 1;                   //版本平台类型,参见CLT_PLATFORM_TYPE_ANDROID等枚举定义
+	string account = 2;                      //帐号
+	string name = 3;
+	uint32 client_ver = 4;                   //新客户端版本编码
+	string channel = 5;                      //渠道
+	int32 operaters_type = 6;                //运营商类型,参见OPERATERS_TYPE_MOBILE等枚举定义
+	double longitude = 7;                    //经度
+	double latitude = 8;                     //纬度
+	string addr = 9;                         //所在地
+}
+
+// 登录
+message CMD_ALOGIN_SC
+{
+	int32 result = 1;                        //账户登录结果码
+	string hint_msg = 2;                     //当alogin失败时的对应错误描述
+}
+
+// 登出
+message CMD_ALOGOUT_CS
+{
+}
+
+// 登出
+message CMD_ALOGOUT_SC
+{
+}
+
+// 创建角色
+message CMD_CREATE_ROLE_CS
+{
+	int32 head_photo = 1;                    // 头像
+	int32 sex = 2;                           // 性别，对应Sex枚举
+	string nick_name = 3;                    // 昵称
+	double longitude = 4;                    // 经度
+	double latitude = 5;                     // 纬度
+	string addr = 6;                         // 所在地
+}
+
+// 创建角色
+message CMD_CREATE_ROLE_SC
+{
+	int64 role_id = 1;                       // 用户ID
+	string nick_name = 2;                    // 昵称
+	int32 sex = 3;                           // 性别
+	int32 user_channel = 4;                  // 用户渠道
+}
+
+// 快速开始
+message CMD_QUICK_START_CS
+{
+	int32 scene_type = 1;                    // 场景类型,对应SceneType枚举
+}
+
+// 心跳包
+message CMD_PING_CS
+{
+	uint32 client_tick = 1;                   //Client Tick number
+	uint32 last_delay = 2;                    //上次延时时间
+}
+
+// 心跳包
+message CMD_PING_SC
+{
+	uint32 client_tick = 1;                   //Client Tick number
+}
+
+// 服务器主动踢用户下线
+message CMD_KICKOFF_ACCOUNT_SC
+{
+	string reason = 1;                         //下线的理由
+}
+
+message PlayerEnterView
+{
+	int32 vip_level = 1;                      //VIP等级
+	string name = 2;                          //字符串类型的名字
+	int32 sex = 3;                            //性别,目前不会用到
+	int32 head_photo = 4;                     //系统头像,目前不会用到
+	int32 own_gold = 5;                       //拥有的金币
+	string self_def_photo = 6;                //玩家自定义头像,长度不为0时以此为准
+	int32 pos = 7;                            //位置,对于房间内的第一个玩家是1，其他依次类推
+	int64 role_born_id = 8;                   //角色ID
+}
+
+message ObjectEnterView
+{
+	int64 object_id = 1;                     //实体handle
+	int32 object_type = 2;                    //对象类型
+	PlayerEnterView player = 3;               //如果是用户类型
+}
+
+// 广播消息,通知周围的人角色进入桌台
+message CMD_NTF_ENTERVIEW_SC
+{
+	repeated ObjectEnterView obj_list = 1 [packed=false];    //进入视野的动态对象列表
+}
+
+message ObjectLeaveView
+{
+	int64 object_id = 1;                     //实体handle
+	int32 object_type = 2;                    //对象类型目前应该仅会有OBJPLAYER
+}
+
+message PROPERTY
+{
+	int32 prop_type = 1;                      //属性key
+	int64 prop_value = 2;                     //属性值
+}
+
+message PackObj
+{
+	int32 object_type = 1;                    //包裹对象类型
+	PROPERTY role_prop_pack = 2;              //属性类,目前主要用于邮件
+}
+
+// 统一定义分页参数
+message PageBreakPara
+{
+	int32 page_index = 1;                      //对应的页序号，注意统一从1开始
+	int32 page_size = 2;                       //一页的大小
+	int32 total_pages = 3;                     //总页数
+	uint32 total_count = 4;                    //对应查询结果的总个数
+}
+		
+// 广播消息,通知周围的人角色离开桌台
+message CMD_NTF_LEAVEVIEW_SC
+{
+	repeated ObjectLeaveView obj_list = 1 [packed=false];    //离开视野的动态对象列表
+}
+
+message RoleBase
+{
+	int32 map_id = 2;
+	string name = 3;
+	string self_def_photo = 4;                //玩家自定义头像,长度不为0时以此为准
+	string mobile = 5;                        //玩家手机号        
+	repeated PROPERTY player_attrs = 6 [packed=false];       //玩家属性集
+	string signature = 7;                     //个性签名
+}
+
+message OnlineGiftPara
+{
+	bool have_next_gift = 1;                  //true表明还可以倒计时领取下一个在线时长礼包
+	int32 next_seconds = 2;                   //下一个倒计时时长单位秒
+	int32 gift_gold = 3;                      //对应礼包的金币数
+	int32 vip_gold_ratio = 4;                 //对应礼包的VIP可领取金币的倍数百分比
+}
+
+message Privilege
+{
+    uint32 privilege_flag = 1;                //玩家特殊特权的标志，按位元计算的
+	int32 vip_level = 2;                      //玩家特殊特权的等级
+}
+
+message RoleMisc
+{
+	int64 object_id = 1;                      //唯一标识handle
+	RoleBase base = 2;                        //角色详细基本信息
+	Privilege privilege = 3;                  //玩家特权信息
+	OnlineGiftPara online_gift = 4;           //本阶段玩家在线礼包相关信息
+	OnlineGiftPara next_online_gift = 5;      //下一阶段玩家在线礼包相关信息
+	repeated string photos = 6 [packed=false];//照片列表
+	string head_url_prefix = 7;               //头像URL前缀
+	string photo_url_prefix = 8;              //照片URL前缀
+	repeated string his_magic_expressions = 9 [packed=false];//历史使用表情
+}
+
+// 角色混杂数据
+message CMD_ROLE_MISC_SC
+{
+	RoleMisc data = 1;                        //角色混杂信息
+}
+
+// 照片变化
+message CMD_CHANGE_PHOTO_SC
+{
+	bool add = 1;                             // true为增加，false为减少
+	string photo = 2;                         // 照片
+}
+
+// 请求进入具体场次
+message CMD_ENTER_SCENE_CS
+{
+	uint32 scene_id = 1;                      // 场景ID
+	bool sit_down = 2;                        // 进入后入座
+}
+
+// 添加照片
+message CMD_ADD_PHOTO_CS
+{
+	bytes photo_binary = 1;               //上传的头像二进制内容
+}
+
+// 添加照片
+message CMD_ADD_PHOTO_SC
+{
+	string photo = 1;                     // 新照片名字
+}
+
+// 删除照片
+message CMD_DEL_PHOTO_CS
+{
+	string photo = 1;                     // 要删除的照片名字
+}
+
+// 删除照片
+message CMD_DEL_PHOTO_SC
+{
+	string photo = 1;                     // 要删除的照片名字
+}
+
+// 登录下发的所有角色信息结束
+message CMD_ROLE_FIN_SC
+{
+}
+
+// 角色属性变化通知
+message CMD_ATT_CHANGE_SC
+{
+	int64 object_id = 1;                      //目标ID
+	int32 object_type = 2;                     //目标类型
+	repeated PROPERTY attrs = 3 [packed=false];               //玩家属性集
+}
+
+// 道具条目
+message ResItem
+{
+	int32 res_id = 1;                   // 资源ID
+	int32 res_num = 2;                  // 资源数量
+}
+
+// 连续登陆礼包信息
+message CMD_CONLOGIN_GIFT_SC
+{
+	uint32 conn_login_days = 1;              // 已连续登陆天数
+	uint32 got_gift_log = 2;                 // 已经领取奖励记录，按位记录，从低到高位表示每一天是否已领奖，0为未领取,1为已领取
+}
+
+// 领取连续登陆礼包
+message CMD_GET_CONLOGIN_GIFT_CS
+{
+}
+
+// 领取连续登陆礼包
+message CMD_GET_CONLOGIN_GIFT_SC
+{
+	uint32 got_gift_log = 1;                  // 已经领取奖励记录，按位记录，从低到高位表示每一天是否已领奖，0为未领取,1为已领取
+	repeated ResItem gifts = 2 [packed=false];// 获得的礼品
+}
+
+// 上传文件类型
+enum UploadType
+{
+	UPLOAD_TYPE_SELF_DEF_HEAD = 0;         // 上传自定义头像
+	UPLOAD_TYPE_PHOTO = 1;                 // 相册照片
+
+	UPLOAD_TYPE_COUNT = 2;
+}
+
+// 获取上传文件令牌
+message CMD_GET_UPLOAD_FILE_TOKEN_CS
+{
+	int32 upload_type = 1;                  // 上传文件类型,对应枚举UploadType
+	int32 file_size = 2;                    // 欲上传的文件大小
+}
+
+// 获取上传文件令牌
+message CMD_GET_UPLOAD_FILE_TOKEN_SC
+{
+	int32 upload_type = 1;                  // 上传文件类型,对应枚举UploadType
+	string upload_url = 2;                  // 上传地址
+	string upload_token = 3;                // 上传令牌
+}
+
+// 上传文件完成
+message CMD_UPLOAD_FILE_COMPLETED_CS
+{
+	int32 upload_type = 1;                  // 上传文件类型,对应枚举UploadType
+	string file_name = 2;                   // 文件名
+}
+
+// 上传文件完成
+message CMD_UPLOAD_FILE_COMPLETED_SC
+{
+	int32 upload_type = 1;                  // 上传文件类型,对应枚举UploadType
+	string file_name = 2;                   // 文件名
+}
+
+// 邮箱类型
+enum MailBoxType
+{
+	MAIL_BOX_TYPE_PLACEHOLDER = 0;
+
+	MAIL_BOX_RECV = 1;               //收件箱
+	MAIL_BOX_SEND = 2;               //暂未支持:发件箱
+}
+
+// 邮件类型
+enum MailType
+{
+	MAIL_TYPE_PLACEHOLDER = 0;
+
+	SYSTEM_MAIL_TYPE = 1;            //系统邮件
+	NORMAL_MAIL_TYPE = 2;            //暂未支持:普通邮件
+}
+	    
+// 邮件状态
+enum MailState
+{
+	MAIL_STAT_PLACEHOLDER = 0;
+
+	MAIL_STAT_HASREAD = 0x1;         //是否已读
+	MAIL_STAT_HASATTACH = 0x2;       //是否有附件
+	MAIL_STAT_DELETED = 0x4;         //已删除（主要用于客户端领取附件或修改状态的响应数据，表明可以将该邮件删除了）
+}
+		
+// 邮件删除类型
+enum DelMailType
+{
+	DEL_MAIL_TYPE_PLACEHOLDER = 0;
+
+	DEL_MAIL_TYPE_ONE = 1;             //删除一封邮件
+	DEL_MAIL_TYPE_TRYBEST = 2;         //暂未支持:一键删除所有可以删除的邮件	    
+}
+
+//邮件获取附件类型
+enum GetMailAttachType
+{
+	GET_MAILATTACH_PLACEHOLDER = 0;
+
+	GET_MAILATTACH_TYPE_ONE = 1;       //获取一封邮件的邮件
+	GET_MAILATTACH_TYPE_TRYBEST = 2;   //暂未支持:一键获取所有可以获取附件的邮件
+}
+
+// 邮件信息
+message MailBaseInfo
+{
+	uint32 mail_id = 1;                     //邮件ID
+	int32 mail_type = 2;                    //邮件类型，参见NORMAL_MAIL_TYPE等的定义
+	int32 mail_stat = 3;                    //邮件状态标志,按位标记，参见MAIL_STAT_HASREAD等的定义
+	string role_name = 4;                   //若在发件箱中，代表收件人姓名，若在收件箱中，代表发件人姓名
+	uint32 mail_time = 5;                   //邮件发送时间
+    string mail_title = 6;                  //邮件标题
+	string mail_content = 7;                //邮件内容
+	repeated PackObj attach_list = 8 [packed=false];       //附件列表
+}
+
+message CMD_GET_MAILLIST_CS
+{
+	int32 mail_box_type = 1;                //邮箱类型，参见枚举MAIL_BOX_RECV等的定义,目前仅收件箱
+	int32 page_index = 2;                   //注是从1开始,查询的页码
+}
+	
+message CMD_GET_MAILLIST_SC
+{
+	int32 mail_box_type = 1;                //邮箱类型，参见枚举MAIL_BOX_RECV等的定义
+	PageBreakPara page_para = 2;            //分页相关数据
+	repeated MailBaseInfo mail_list = 3 [packed=false];             //邮件列表
+}
+	
+message CMD_GET_MAILATTACH_CS
+{
+	int32 mail_box_type = 1;                //邮箱类型，参见枚举MAIL_BOX_RECV等的定义,目前仅收件箱
+	int32 get_type = 2;                     //获取附件类型，参见枚举GET_MAILATTACH_TYPE_ONE等的定义
+	uint32 mail_id = 3;                     //相关邮件ID，在获取单封邮件附件时有效
+}
+	
+message CMD_GET_MAILATTACH_SC
+{
+	int32 mail_box_type = 1;                //邮箱类型，参见枚举MAIL_BOX_RECV等的定义,目前仅收件箱
+	int32 get_type = 2;                     //获取附件类型，参见枚举GET_MAILATTACH_TYPE_ONE等的定义
+	int32 get_succ_num = 3;                 //成功获取附件邮件封数
+	uint32 mail_id = 4;                     //相关邮件ID，在获取单封邮件附件时有效
+	int32 cur_mail_stat = 5;                //邮件最新的当前状态标志,按位标记，参见MAIL_STAT_HASREAD等的定义
+	repeated PackObj attach_list = 6 [packed=false];       //最终获得的列表附件列表
+}
+
+message CMD_MAILSTAT_CHANGE_CS
+{
+	int32 mail_box_type = 1;                //邮箱类型，参见枚举MAIL_BOX_RECV等的定义,目前仅收件箱
+	uint32 mail_id = 2;                     //相关邮件ID
+	int32 mail_change_type = 3;             //邮件状态变更,直接使用枚举值,为MAIL_STAT_HASREAD表明邮件己读
+}
+	
+message CMD_MAILSTAT_CHANGE_SC
+{
+	int32 mail_box_type = 1;                //邮箱类型，参见枚举MAIL_BOX_RECV等的定义,目前仅收件箱
+	uint32 mail_id = 2;                     //相关邮件ID
+	int32 cur_mail_stat = 3;                //邮件最新的当前状态标志,按位标记，参见MAIL_STAT_HASREAD等的定义
+}
+
+
+// 排行榜分类定义枚举
+enum RankClassType
+{	   
+	RANK_CLASS_PLACEHOLDER = 0;
+
+	RANK_CLASS_DAILY_DZ_WIN_GAME_COUNT = 1;      //德州扑克每日胜利局数量排行
+	RANK_CLASS_OWN_GOLD = 2;                     //拥有金币排行
+	RANK_CLASS_DZ_TILI_GAME_GRADES_1 = 3;        //德州扑克体力场积分排行1
+	RANK_CLASS_DZ_TILI_GAME_GRADES_2 = 4;        //德州扑克体力场积分排行2
+}
+
+// 新版支付中心协议开始
+enum ChargePaltformType
+{
+	CHARGE_PLATFORM_TYPE_PLACEHOLDER = 0;
+
+	CHARGE_PLATFORM_WEIPAI = 1;                             //旧版支付中心:微派
+	CHARGE_PLATFORM_MM = 2;                                 //旧版支付中心:MM移动
+	CHARGE_PLATFORM_VIVO = 3;                               //旧版支付中心:VIVO
+	CHARGE_PLATFORM_UNICOM = 4;                             //己停止接入该支付平台旧版支付中心:联通unicom沃音乐
+	CHARGE_PLATFORM_LENOVO = 5;                             //旧版支付中心:联想lenovo
+	CHARGE_PLATFORM_HAIMA = 6;                              //旧版支付中心:海马
+		
+	CHARGE_PLATFORM_PAYCENTER_MM = 100;                     //新版支付中心:MM移动
+	CHARGE_PLATFORM_PAYCENTER_ALIPAY = 101;                 //新版支付中心:支付宝
+	CHARGE_PLATFORM_PAYCENTER_WEIXIN = 102;                 //新版支付中心:微信
+	CHARGE_PLATFORM_PAYCENTER_UNIONPAY = 103;               //新版支付中心:银联
+	CHARGE_PLATFORM_PAYCENTER_PREPAID = 104;                //新版支付中心:预付卡
+	CHARGE_PLATFORM_PAYCENTER_ALIPAY_WAP = 105;             //新版支付中心:支付宝WAP版本
+	CHARGE_PLATFORM_PAYCENTER_UNIONPAY_WAP = 106;           //新版支付中心:银联WAP版本
+	CHARGE_PLATFORM_PAYCENTER_THIRD_IYOUXI = 107;           //新版支付中心:电信爱游戏
+	CHARGE_PLATFORM_PAYCENTER_PAYAPK_ALIPAY = 108;          //新版支付中心:单独支付apk中的支付宝
+	CHARGE_PLATFORM_PAYCENTER_PAYAPK_WEIXIN = 109;          //新版支付中心:单独支付apk中的微信
+	CHARGE_PLATFORM_PAYCENTER_PAYAPK_UNIONPAY = 110;        //新版支付中心:单独支付apk中的银联
+	CHARGE_PLATFORM_PAYCENTER_ZWXPROXY_WEIXIN_WAP = 111;    //新版支付中心:通过梓微兴代理接入的微信WAP支付
+
+	CHARGE_PLATFORM_PAYCENTER_THIRD_VIVO = 150;             //新版支付中心第三方:VIVO
+	CHARGE_PLATFORM_PAYCENTER_THIRD_UNICOM = 151;           //己停止接入该支付平台新版支付中心第三方:联通unicom沃音乐
+	CHARGE_PLATFORM_PAYCENTER_THIRD_LENOVO = 152;           //新版支付中心第三方:联想lenovo
+	CHARGE_PLATFORM_PAYCENTER_THIRD_HAIMA = 153;            //新版支付中心第三方:海马
+	CHARGE_PLATFORM_PAYCENTER_THIRD_SHANXIPOINTS = 154;     //新版支付中心第三方:陕西积分兑换
+	CHARGE_PLATFORM_PAYCENTER_THIRD_PINGXX = 155;           //新版支付中心第三方:pingxx
+	CHARGE_PLATFORM_PAYCENTER_THIRD_APPLE = 156;            //新版支付中心第三方:appstore
+	CHARGE_PLATFORM_PAYCENTER_THIRD_AIBEI = 157;            //新版支付中心第三方:爱贝
+	CHARGE_PLATFORM_PAYCENTER_THIRD_BAIDU = 158;            //新版支付中心第三方:百度移动游戏单机版
+	CHARGE_PLATFORM_PAYCENTER_THIRD_360 = 159;              //新版支付中心第三方:360
+	CHARGE_PLATFORM_PAYCENTER_THIRD_GOOGLE = 160;           //新版支付中心第三方:google
+	CHARGE_PLATFORM_PAYCENTER_THIRD_UC = 161;               //新版支付中心第三方:UC
+	CHARGE_PLATFORM_PAYCENTER_THIRD_WANDOU = 162;           //新版支付中心第三方:豌豆荚
+	CHARGE_PLATFORM_PAYCENTER_THIRD_ANZHI = 163;            //新版支付中心第三方:安智
+	CHARGE_PLATFORM_PAYCENTER_THIRD_YY = 164;               //新版支付中心第三方:YY
+	CHARGE_PLATFORM_PAYCENTER_THIRD_JOLO = 165;             //新版支付中心第三方:聚乐
+	CHARGE_PLATFORM_PAYCENTER_THIRD_YOUKU = 166;            //新版支付中心第三方:优酷
+	CHARGE_PLATFORM_PAYCENTER_THIRD_OPPO = 167;             //新版支付中心第三方:OPPO
+	CHARGE_PLATFORM_PAYCENTER_THIRD_SINASHOW = 168;         //新版支付中心第三方:新浪秀场秀币兑换
+    CHARGE_PLATFORM_PAYCENTER_THIRD_MIDAS = 169;            //新版支付中心第三方:米大师
+    CHARGE_PLATFORM_PAYCENTER_THIRD_MUMAYI = 170;           //新版支付中心第三方:木蚂蚁
+    CHARGE_PLATFORM_PAYCENTER_THIRD_NIUX = 171;             //新版支付中心第三方:迅雷NIUX
+    CHARGE_PLATFORM_PAYCENTER_THIRD_PAPA = 172;             //新版支付中心第三方:啪啪
+    CHARGE_PLATFORM_PAYCENTER_THIRD_LEGAME = 173;           //新版支付中心第三方:乐视
+    CHARGE_PLATFORM_PAYCENTER_THIRD_PP = 174;               //新版支付中心第三方:PP助手
+    CHARGE_PLATFORM_PAYCENTER_THIRD_XY = 175;               //新版支付中心第三方:XY
+}
+
+enum OptionParaKey
+{
+	OPTION_PARA_KEY_PLACEHOLDER = 0;
+
+	OPTION_PARA_KEY_PREPAID_CARDID = 1;                     //己废弃不用的上行参数-预付卡卡号
+	OPTION_PARA_KEY_PREPAID_CARDPWD = 2;                    //己废弃不用的上行参数-预付卡密码
+	OPTION_PARA_KEY_PINGXX_PAYCHANNEL = 3;                  //上行参数-ping支付生成订单时选择的支付方式
+		
+	OPTION_PARA_KEY_VIVO_ACCESS_KEY = 100;                  //下行参数-VIVO生成商户订单后对应返回的accesskey
+	OPTION_PARA_KEY_VIVO_OUTER_ORDERID = 101;               //下行参数-VIVO生成商户订单后对应返回的VIVO订单号在客户端协议中使用
+	OPTION_PARA_KEY_WEIXIN_PREPAYID = 102;                  //下行参数-微信生成的预支付回话标识用于后续接口调用中使用该值有效期为2小时
+	OPTION_PARA_KEY_ALIPAY_NOTIFYSVRURL = 103;              //下行参数-支付宝SDK支付成功后的后台通知地址
+	OPTION_PARA_KEY_UNIONPAY_PREPAYID = 104;                //下行参数-银联生成的预支付回话标识用于后续接口调用中使用
+	OPTION_PARA_KEY_WEIXIN_TIMESTAMP = 105;                 //下行参数-微信生成的时间戳timestamp后续发起支付接口调用中使用该值
+	OPTION_PARA_KEY_WEIXIN_NONCESTR = 106;                  //下行参数-微信生成的随机串noncestr后续发起支付接口调用中使用该值
+	OPTION_PARA_KEY_WEIXIN_SIGN = 107;                      //下行参数-微信生成的签名值sign后续发起支付接口调用中使用该值
+	OPTION_PARA_KEY_WEIXIN_CPID = 108;                      //下行参数-微信支付对应的商户IDCPID
+	OPTION_PARA_KEY_PINGXX_CHARGEOBJ = 109;                 //下行参数-pingxx支付生成订单时返回的支付凭据
+	OPTION_PARA_KEY_REAL_THIRD_APPID = 110;                 //下行参数-各种支付平台配置的真实的应用ID与上行appid不一定一致真实的应用APPID没有下发或者下发的是空的情况都以本地为准
+	OPTION_PARA_KEY_AIBEI_TRANSID = 111;                    //下行参数-爱贝生成的预支付交易ID用于后续接口调用中使用
+	OPTION_PARA_KEY_UNIONPAY_WAP_POSTDATA = 112;            //下行参数-银联WAP支付生成的post数据用于请求网页支付
+	OPTION_PARA_KEY_UNIONPAY_WAP_POSTDATA_URL = 113;        //下行参数-银联WAP支付生成的post数据访问的网页地址
+	OPTION_PARA_KEY_ALIPAY_WAP_POSTDATA = 114;              //下行参数-支付宝WAP支付生成的post数据用于请求网页支付
+	OPTION_PARA_KEY_ALIPAY_WAP_POSTDATA_URL = 115;          //下行参数-支付宝WAP支付生成的post数据访问的网页地址
+	OPTION_PARA_KEY_ALIPAY_CPID = 116;                      //下行参数-支付宝SDK支付对应的商户ID也即partner id
+	OPTION_PARA_KEY_ALIPAY_CPPRIVATEKEY = 117;              //下行参数-支付宝SDK支付对应的商户私钥
+	OPTION_PARA_KEY_UNIONPAY_WAP_RETURNGAME_URL = 118;      //下行参数-银联WAP支付对应的银联页面返回游戏的地址
+	OPTION_PARA_KEY_360_NOTIFYSVRURL = 119;                 //下行参数-360SDK支付成功后的后台通知地址
+	OPTION_PARA_KEY_ALIPAY_SELLER_ID = 120;                 //下行参数-支付宝SDK支付对应的卖家支付宝账号对应的唯一用户号是一串数字
+	OPTION_PARA_KEY_ALIPAY_SELLER_ACCOUNT = 121;            //下行参数-支付宝SDK支付对应的卖家支付宝账号是一个email或者是手机号码格式
+	OPTION_PARA_KEY_MM_APPTOKEN = 122;                      //下行参数-MM支付对应的appkey
+	OPTION_PARA_KEY_360_GET_USER_INFO_URL = 123;            //下行参数-360登录后拉取用户信息的URL
+	OPTION_PARA_KEY_GAME_USER_NAME = 124;                   //下行参数-游戏内部用户名称
+	OPTION_PARA_KEY_GAME_USER_ID = 125;                     //下行参数-游戏内部用户ID
+	OPTION_PARA_KEY_GOODS_NAME = 126;                       //下行参数-支付项对应的商品名称若为空以客户端本地内容为准
+	OPTION_PARA_KEY_COMM_NOTIFYSVRURL = 127;                //下行参数-当需要时填充对应的游戏服务器充值成功通知地址
+	OPTION_PARA_KEY_COMM_CP_SECURITY_KEY = 128;             //下行参数-根据具体需求填入游戏的秘钥，私钥或者其他秘钥
+	OPTION_PARA_KEY_COMM_APP_KEY = 129;                     //下行参数-根据具体需求填入AppKey
+	OPTION_PARA_KEY_COMM_APP_SECURIT = 130;                 //下行参数-根据具体需求填入AppScret
+	OPTION_PARA_KEY_PAY_APK_NAME = 131;                     //下行参数-独立支付APK的包名
+	OPTION_PARA_KEY_PAY_APK_DOWNLOAD_URL = 132;             //下行参数-独立支付APK对应的下载地址
+	OPTION_PARA_KEY_PAY_APK_VERSION = 133;                  //下行参数-独立支付APK对应的版本号
+	OPTION_PARA_KEY_PAY_ZWX_PREPAY_URL = 134;               //下行参数-通过梓微兴代理接入的微信H5支付对应的URL
+    OPTION_PARA_KEY_GEN_ORDER_TIME = 135;                   //下行参数-订单生成时间
+
+	OPTION_PARA_KEY_CLIENT_IP = 200;                        //内部参数-发起请求的客户端IP
+	OPTION_PARA_KEY_CLIENT_OSTYPE = 201;                    //内部参数-发起请求的客户端平台类型adnroid or ios
+}
+
+message CMD_NOTIFY_CHARGESUCC_SC
+{
+	string order_id = 1;                                    //充值订单号
+	uint32 base_buy_gold = 2;                               //购买金币
+	uint32 extra_present_gold = 3;                          //赠送金币
+	uint32 day_first_got_gold = 4;                          //今日首充
+	uint32 alipay_got_gold = 5;                             //支付宝
+	uint32 beyond_got_gold = 6;                             //超值包
+	uint32 limit_time_got_gold = 7;                         //限时特惠
+	uint32 vip_extra_got_gold = 8;                          //VIP赠送
+	uint32 cur_charge_rank = 9;                             //当前充值榜排名,为0时不在排行榜上
+	int64 tomorrow_rank_award = 10;                         //预计明日充值榜排名奖励
+	int64 all_total_got_gold = 11;                          //总充值获得金额
+}
+
+message CMD_PAYCENTER_NOTIFY_SERVER_SUCC_CS
+{
+	uint32 charge_platform = 1;                             //支付平台类型参见CHARGE_PLATFORM_HAIMA等定义
+	string app_id = 2;                                      //appid		
+	uint32 inner_goods_id = 3;                              //游戏内部支付商品ID
+	string outer_order_id = 4;                               //第三方支付平台生成的外部订单号若没有则统一填充内部订单号
+	string inner_order_id = 5;                              //游戏内部订单编号
+}
+		
+message CMD_PAYCENTER_NOTIFY_CLIENT_SUCC_SC
+{
+	string outer_order_id = 1;                               //第三方支付平台生成的外部订单号若没有则统一填充内部订单号
+	string inner_order_id = 2;                              //返回的游戏内部订单编号
+	int32 got_money_type = 3;                               //获得的游戏内货币类型参见MONEY_TYPE_GOLD等枚举
+	uint32 base_got_money = 4;                              //购买获得的基础货币
+	uint32 day_first_got_money = 5;                         //今日首充
+	uint32 vip_extra_got_money = 6;                         //VIP赠送
+	uint32 cur_charge_rank = 7;                             //当前充值榜排名,为0时不在排行榜上
+	int64 tomorrow_rank_award = 8;                          //预计明日充值榜排名奖励
+	int64 all_total_got_money = 9;                            //总充值获得货币
+	uint32 cost_currency_fen = 10;                          //单位是分玩家真实花费的人民币目前仅当预付卡充值时会发生与paycode不一致的情况
+}
+
+message OptionPara
+{
+	uint32 para_key = 1;                                    //参数key的定义参见OPTION_PARA_KEY_SVR_NOTIFYURL等的定义
+	string para_val = 2;                                    //可选参数的value
+}
+
+message CMD_PAYCENTER_GEN_ORDER_CS
+{
+	uint32 charge_platform = 1;                               //支付平台类型参见CHARGE_PLATFORM_PAYCENTER_MM等定义
+	string app_id = 2;                                       //相应的应用ID
+	uint32 inner_goods_id = 3;                               //游戏内部支付商品ID
+	string pay_view_channel = 4;                             //支付来源于哪个显示UI
+	repeated OptionPara option_para = 5 [packed=false];                     //可选参数列表
+}
+
+message CMD_PAYCENTER_GEN_ORDER_SC
+{
+	uint32 charge_platform = 1;                              //支付平台类型参见CHARGE_PLATFORM_HAIMA等定义
+	string app_id = 2;                                       //appid,这个是直接将上行的appid返回,真实的第三方平台里配置的appid通过可选参数下行		
+	string pay_code = 3;                                     //支付编码
+	string inner_order_id = 4;                               //游戏内部订单编号
+	string private_info = 5;                                 //客户端发起支付时传递的私有信息
+	repeated OptionPara option_para = 6 [packed=false];                     //可选参数列表
+	uint32 inner_goods_id = 7;                               //游戏内部支付商品ID
+	uint32 cost_currency_fen = 8;                            //单位是分配置的paycode对应的消费金额单位是分
+	int32 gen_order_ret = 9;                                 //0成功其他失败具体的错误原因可能通过错误提示下发
+}
+
+//预付卡的类型定义
+enum PrepayCardType
+{
+	PREPAID_CARD_TYPE_PLACEHOLDER = 0;
+
+	PREPAID_CARD_TYPE_CHINAMOBILE_COMMON = 1;                 //全国移动充值卡
+	PREPAID_CARD_TYPE_CHINAUNICOM_COMMON = 2;                 //全国联通一卡充
+	PREPAID_CARD_TYPE_CHINATELECOM_COMMON = 3;                //中国电信充值付费卡
+}
+
+message CMD_PAYCENTER_PREPAID_CARD_DOPAY_CS
+{
+	int32 prepay_card_type = 1;                               //进行支付的卡类型参见PREPAID_CARD_TYPE_CHINAMOBILE_COMMON等枚举
+	uint32 select_card_val_fen = 2;                           //选择的卡面额单位是分
+	string card_num = 3;                                      //卡号加密后上传
+	string card_pwd = 4;                                      //卡密码加密后上传
+	string inner_order_id = 5;                                //游戏内部订单编号
+	uint32 inner_goods_id = 6;                                //游戏内部支付商品ID
+	string private_info = 7;                                  //客户端发起支付时传递的私有信息
+}
+	
+message CMD_PAYCENTER_PREPAID_CARD_DOPAY_SC
+{
+	int32 do_pay_result = 1;                                    //0成功其他失败具体的错误原因可能通过错误提示下发
+}
+
+message CMD_APPSTORE_PAYRECEPIT_VERIFY_CS
+{
+	string inner_order_id = 1;                              //游戏内部订单编号
+	uint32 inner_goods_id = 2;                              //游戏内部支付商品ID
+	string private_info = 3;                                //客户端发起支付时传递的私有信息
+	string receipt_data = 4;                                //支付成功返回的receipt数据
+	string app_id = 5;                                      //相应的应用ID
+}
+
+message CMD_APPSTORE_PAYRECEPIT_VERIFY_SC
+{
+	string inner_order_id = 1;                              //游戏内部订单编号
+	int32 do_verify_result = 2;                             //0成功其他失败具体的错误原因可能通过错误提示下发
+}
+
+
+message CMD_REQ_BIND_SMSCODE_CS
+{
+	string mobile = 1;                                      //玩家手机号
+}
+	
+message CMD_REQ_BIND_SMSCODE_SC
+{
+	string mobile = 1;                                      //玩家手机号
+}
+
+message CMD_CONFIRM_BIND_SMSCODE_CS
+{
+	string mobile = 1;                                      //玩家手机号
+	uint32 sm_scode = 2;                                    //相关验证码
+}
+	
+// 确认后的手机号绑定类型
+enum MobileBindType
+{  
+	MOBILE_BIND_PLACEHOLDER = 0;
+
+	MOBILE_BIND_CNA_DIRECT_DO = 1;                          //可以直接进行绑定
+	MOBILE_BIND_MOBILE_ALREADY_BIND = 2;                    //当前手机号已经绑定了帐号,接下来需要确认帐号迁移	    
+}
+
+message CMD_CONFIRM_BIND_SMSCODE_SC
+{
+	string mobile = 1;                                     //玩家手机号
+	uint32 sm_scode = 2;                                   //相关验证码
+	int32 confirm_ret = 3;                                 //验证通过后的确认类型,参见枚举MOBILE_BIND_CNA_DIRECT_DO等的定义
+	string exist_bind_role_name = 4;                       //己有绑定帐号的角色名,确认结果为MOBILE_BIND_MOBILE_ALREADY_BIND有效
+	int32 exist_bind_role_vip_lv = 5;                      //己有绑定帐号的VIP等级,确认结果为MOBILE_BIND_MOBILE_ALREADY_BIND有效
+	int64 exist_bind_born_id = 6;                           //己有绑定帐号的角色ID,确认结果为MOBILE_BIND_MOBILE_ALREADY_BIND有效
+	int64 exist_bind_gold = 7;                             //己有绑定帐号的金币,确认结果为MOBILE_BIND_MOBILE_ALREADY_BIND有效
+}
+		
+message CMD_DO_BIND_MOBILE_CS
+{
+	string mobile = 1;                                     //玩家手机号
+	uint32 sm_scode = 2;                                   //相关验证码
+}
+	
+message CMD_DO_BIND_MOBILE_SC
+{
+	string mobile = 1;                                     //玩家手机号
+	uint32 sm_scode = 2;                                   //相关验证码
+}
+
+message CMD_DO_UNBIND_CURMOBILE_CS
+{
+
+}
+
+message CMD_DO_UNBIND_CURMOBILE_SC
+{
+
+}
+	
+message CMD_DO_REPLACE_ACCOUNT_CS
+{
+	string mobile = 1;                                     //玩家手机号
+	uint32 sm_scode = 2;                                   //相关验证码
+}
+	
+message CMD_DO_REPLACE_ACCOUNT_SC
+{
+	string mobile = 1;                                     //玩家手机号
+	uint32 sm_scode = 2;                                   //相关验证码
+}
+
+
+//排行榜类型定义枚举
+enum RankRefreshType
+{
+	RANK_REFRESHTYPE_NONE = 0;                               //不会定期刷新
+	RANK_REFRESHTYPE_WEEK = 1;                               //按周刷新,目前暂时不支持
+	RANK_REFRESHTYPE_DAY = 2;                                //按天刷新
+}
+
+message OneRankData
+{
+	string rank_acc = 1;                                    //帐号,目前没有用,下行空串
+	string rank_name = 2;                                   //角色或者其他排序项名字
+	string rank_ext_name = 3;                               //目前暂时无用,其他情况为空
+	int32 rank = 4;                                         //对应的排名
+	int64 rank_val1 = 5;                                    //排序值1
+	int64 rank_val2 = 6;                                    //排序值2
+	int64 born_id = 7;                                      //玩家ID
+	int32 head_photo = 8;                                   //系统头像
+	string self_def_photo = 9;                              //玩家自定义头像,长度不为0时以此为准
+	int64 relate_award = 10;                                //排序相关奖励
+	int32 vip_lv = 11;                                      //VIP等级
+}
+
+message MyRankData
+{
+	bool is_in_rank = 1;                                    //0不在排行中,1在排行中
+	int32 my_rank = 2;                                      //我的排名,当在排行中时有效
+	int64 rank_val1 = 3;                                    //排序值1,当在排行中时有效
+	int64 rank_val2 = 4;                                    //排序值2,当在排行中时有效
+	bool is_has_award = 5;                                  //若在排行榜中且是有奖励的排行榜时有效:0没有领取相应奖励,其他己领取相应奖励
+}
+
+message CMD_RANK_QUERYPAGE_CS
+{
+	int32 rank_class = 1;                                   //排行榜分类,参见RankClass枚举定义
+	uint32 rank_sub_class = 2;                              //排行榜子分类:当用于标记按天充值排行榜中的历史榜单则上一天为1,为0是当天
+	int32 page_index = 3;                                   //注是从1开始,查询的页码,当不是查询角色分页时有效
+	bool is_query_role_page = 4;                            //1是指查询角色所在的分页,0不是 
+}
+
+message CMD_RANK_QUERYPAGE_SC
+{
+	int32 rank_class = 1;                                   //排行榜分类,参见RankClass等枚举定义
+	uint32 rank_sub_class = 2;                              //排行榜子分类:当为充值榜时传1表明是获取昨天列表
+	int32 rank_refresh_type = 3;                            //排行榜刷新类型,参见RANK_REFRESHTYPE_NONE等枚举定义
+	bool is_query_role_page = 4;                            //1是指查询角色所在的分页下行,0不是
+	PageBreakPara page_para = 5;                            //分页相关数据
+	MyRankData my_rank_data = 6;                            //我的排行相关值
+	repeated OneRankData rank_list = 7 [packed=false];      //查询分页结果列表
+	uint32 relate_period_time = 8;                          //当为定期刷新的排行榜时,对应了查询结果对应的生成时间
+	uint32 period_refresh_time = 9;                         //新排行榜下次刷新时间,如果为0,表明不会刷新
+	int32 period_list_num = 10;                             //当前对应的可查询的定期刷新历史榜单个数
+}
+
+enum FuncType
+{
+	FUNC_TYPE_PLACEHOLD = 0;
+
+	FUNC_TYPE_TASK = 0x1;               // 任务
+	FUNC_TYPE_MAIL = 0x2;               // 邮件
+}
+
+message OneNewMsgTag
+{
+	int64 func_type = 1;                                    //功能类型, FuncType枚举
+	int32 relate_num = 2;                                   //对应标记数字
+}
+
+message CMD_NEWMSG_TAG_CS
+{
+	int64 func_type =1;                                    //通知清除标记的功能不会有对应下行,客户端发出上行后自行清理
+}
+
+message CMD_NEWMSG_TAG_SC
+{
+	repeated OneNewMsgTag tag_list = 1 [packed=false];                    //服务器主动通知的当前需要打点的列表
+}
+
+message CMD_UPLOAD_HEADPHOTO_CS
+{
+	bytes photo_binary = 1;                                      //上传的头像二进制内容
+}
+
+message CMD_UPLOAD_HEADPHOTO_SC
+{
+	string self_def_photo = 1;                                     //上传成功则返回玩家自定义头像对应http地址
+}
+
+message CMD_CHANGE_HEADPHOTO_CS
+{
+	int32 sys_head_photo = 1;                          //系统头像ID
+}
+
+message CMD_MODIFY_NICK_CS
+{
+	string new_name = 1;                                   //角色新名字最长6汉字客户端本地昵称需要在收到对应下行后自行刷新
+}
+
+message CMD_MODIFY_NICK_SC
+{
+	string new_name = 1;                                   //角色新名字最长6汉字客户端本地昵称需要在收到对应下行后自行刷新
+}
+
+message CMD_MODIFY_SELFPROP_CS
+{
+	repeated PROPERTY modify_list = 1 [packed=false];          //对应的修改列表
+}
+
+message CMD_MODIFY_SIGNATURE_CS
+{
+	string signature = 1;                               // 签名
+}
+
+message CMD_MODIFY_SIGNATURE_SC
+{
+	string signature = 1;                               // 签名
+}
+
+message CMD_USE_MAGIC_EXPRESSION_CS
+{
+	int64 to = 1;
+	string expression = 2;
+}
+
+message CMD_USE_MAGIC_EXPRESSION_SC
+{
+	int64 from = 1;
+	int64 to = 2;
+	string expression = 3;
+}
+
+
+message CMD_SKIP_NEWERGUIDE_CS
+{
+	
+}
+
+message CMD_SKIP_NEWERGUIDE_SC
+{
+	
+}
+
+//完成新手引导
+message CMD_FINISH_NEWERGUIDE_CS
+{
+	
+}
+
+//完成新手引导
+message CMD_FINISH_NEWERGUIDE_SC
+{
+	int64 award_gold = 1;       // 奖励金币
+}
+
+// 游戏场景类型
+enum SceneType
+{
+	SCENE_TYPE_BEGIN = 0;
+
+	SCENE_TYPE_HALL = 1;              // 大厅
+	SCENE_TYPE_DZ_CLASSICS = 2;       // 德州扑克
+	SCENE_TYPE_AMH = 3;               // 奥马哈
+}
+
+// 游戏场景模板ID
+enum SceneTempId
+{
+	SCENE_TEMP_ID_PLACEHOLD = 0;
+
+	SCENE_TEMP_ID_HALL = 1;                     // 大厅
+	SCENE_TEMP_ID_DZ_CLASSICS_3QIAN = 201;      // 德州扑克3千场
+	SCENE_TEMP_ID_DZ_CLASSICS_1WAN = 202;       // 德州扑克1万场
+	SCENE_TEMP_ID_DZ_CLASSICS_4WAN = 211;       // 德州扑克4万场
+	SCENE_TEMP_ID_DZ_CLASSICS_10WAN = 212;      // 德州扑克10万场
+	SCENE_TEMP_ID_DZ_CLASSICS_50WAN = 221;      // 德州扑克50万场
+}
+
+// 游戏玩法枚举
+enum GamePlay
+{
+	GAMEPLAY_NORMAL = 0;                         // 普通玩法
+	GAMEPLAY_TILI = 1;                           // 体力场玩法
+}
+
+message CMD_WARP_CS
+{
+	int32 map_id = 1;              //想要进入的房间对应地图ID参见SCENE_TEMP_ID_HALL等枚举
+	int32 seat_num = 2;            //一个桌子的座位数量（9人桌填9,6人桌填6，不限制填0）
+}
+	
+message CMD_WARP_SC
+{
+	int32 map_id = 1;              //将要被传送至的房间对应地图ID参见SCENE_TEMP_ID_HALL等枚举
+	int32 seat_num = 2;            //一个桌子的座位数量
+	int32 scene_type = 3;          //场景类型
+	int32 gameplay = 4;            //场次的游戏玩法
+}
+
+// 获取场景信息
+message CMD_GET_SCENE_INFO_CS
+{
+	int32 scene_type = 1;            // 场景类型
+};
+
+// 场次信息
+message SceneInfo
+{
+	int32 scene_tmp_id = 1;         // 场次模板ID
+	int32 max_buy_in = 2;           // 最大买入
+	int32 small_blind_chips = 3;    // 小盲注
+	int32 big_blind_chips = 4;      // 大盲注
+	int32 player_num = 5;           // 玩家数量
+	int64 min_join_gold = 6;        // 入场金币下限
+	int64 max_join_gold = 7;        // 入场金币上限
+};
+
+// 获取场景信息
+message CMD_GET_SCENE_INFO_SC
+{
+	int32 scene_type = 1;            // 场景类型
+	repeated SceneInfo scenes = 2 [packed=false];   // 场景
+};
+
+message OneChatHisMsg
+{
+	string sender = 1;                      //发送方
+	string chat_detail = 2;                 //聊天内容
+	int32 sender_vip_lv = 3;                //发送方VIP等级
+	bool is_self_send = 4;                  //是否收到方就是发送方自己
+	int32 sender_sex = 5;                   //发送方性别,目前不会用到
+	int32 head_photo = 6;                   //系统头像,目前不会用到
+	int32 channel = 7;                      //聊天频道,参见ChatChannel定义
+	int32 chat_type = 8;                    //消息类型,参见ChatType等定义
+	int64 sender_role_id = 9;               //当为玩家触发消息时对应的发送方角色ID
+	string sender_self_def_photo = 10;      //发送方自定义头像
+}
+
+message CMD_SCENE_HISTORY_CHATMSG_SC
+{
+	repeated OneChatHisMsg his_list = 1 [packed=false];              //历史记录
+}
+
+// 聊天类型定义枚举
+enum ChatType
+{
+	CHAT_TYPE_USER_EDIT = 0;               //自定义内容
+	CHAT_TYPE_PREDEF = 1;                  //预定义聊天内容此时聊天内容里存放的是对应消息ID
+	CHAT_TYPE_USER_VOICE = 2;              //自定义语音
+}
+
+message CMD_CHAT_CS
+{
+	int32 channel = 1;                //消息频道
+	string chat_detail = 2;           //聊天内容
+	int32 chat_type = 3;              //消息类型,参见ChatType等定义
+}
+
+message CMD_CHAT_SC
+{
+	int32 channel = 1;                      //聊天频道,参见ChatChannel定义
+	string sender = 2;                      //发送方
+	string chat_detail = 3;                 //聊天内容
+	int32 sender_vip_lv = 4;                //发送方VIP等级
+	bool is_self_send = 5;                  //是否收到方就是发送方自己
+	int32 sender_sex = 6;                   //发送方性别,目前不会用到
+	int32 head_photo = 7;                   //系统头像,目前不会用到
+	int32 chat_type = 8;                    //消息类型,参见ChatType等定义
+	int64 sender_role_id = 9;               //当为玩家触发消息时对应的发送方角色ID
+	string sender_self_def_photo = 10;      //发送方自定义头像
+}
+
+// 德州扑克牌型枚举
+enum DzCardType
+{
+	DZ_CARD_TYPE_None = 0;
+
+	DZ_CARD_TYPE_GaoPai = 1;                // 高排
+	DZ_CARD_TYPE_DuiZi1 = 2;                // 一对
+	DZ_CARD_TYPE_DuiZi2 = 3;                // 两对
+	DZ_CARD_TYPE_SanTiao = 4;               // 三条
+	DZ_CARD_TYPE_ShunZi = 5;                // 顺子
+	DZ_CARD_TYPE_TongHua = 6;               // 同花
+	DZ_CARD_TYPE_HuLu = 7;                  // 葫芦
+	DZ_CARD_TYPE_SiTiao = 8;                // 四条
+	DZ_CARD_TYPE_TongHuaShun = 9;           // 同花顺
+	DZ_CARD_TYPE_HuangJiaTongHuaShun = 10;  // 皇家同花顺
+
+	DZ_CARD_TYPE_Count = 11;
+};
+
+// 德州扑克桌台状态
+enum DzTableStatus
+{
+	DZ_TABLE_STATUS_NOTBEGIN = 0;             // 未开始
+	DZ_TABLE_STATUS_WAIT_BEGIN = 1;           // 等待开始
+	DZ_TABLE_STATUS_PLAYING = 2;              // 游戏中
+	DZ_TABLE_STATUS_ENDING = 3;               // 结算中
+	DZ_TABLE_STATUS_WAIT_END = 4;             // 等待结算
+};
+
+// 德州扑克玩家状态
+enum DzPlayerStatus
+{
+	DZ_PLAYER_STATUS_SIT_DOWN = 0;            // 坐下
+	DZ_PLAYER_STATUS_READY = 1;               // 已准备(暂时不用)
+	DZ_PLAYER_STATUS_PLAYING = 2;             // 游戏中
+	DZ_PLAYER_STATUS_DISCARD = 3;             // 已弃牌
+	DZ_PLAYER_STATUS_ALLIN = 4;               // 已经ALL-IN
+};
+
+// 德州扑克玩家标记
+enum DzPlayerFlags
+{
+	DZ_PLAYER_FLAG_PLACEHOLD = 0;
+
+	DZ_PLAYER_FLAG_LOSTCONNECT = 0x00000001;             // 掉线
+	DZ_PLAYER_FLAG_AUTO_BUY_CHIPS = 0x00000002;          // 筹码不够时自动买入
+	DZ_PLAYER_FLAG_SHOW_CARD_WHEN_END = 0x00000004;      // 结束时亮牌
+};
+
+// 德州桌台全量数据
+message DzAllData
+{
+	int32 round_index = 1;                    //对应的相关局数序号,目前仅用于调试方便
+	int32 table_status = 2;                   //当前状态,DzTableStatus
+	int32 relate_left_time = 3;               //各种状态下的相关剩余秒数
+	int32 cur_circle = 4;                     //当前圈数，从1开始，依次为 底牌圈、翻牌圈、转牌圈、河牌圈
+	int64 total_beton = 5;                    //总下注额(即总池数额)
+	int64 circle_need_beton = 6;              //本圈最小需要下注多少筹码
+	int64 last_add_chips = 7;                 //上次加注筹码
+	int64 small_blind_chips = 8;              //小盲注额（这里是小盲注玩家应下注额,实际上当玩家筹码不够时,下注比此值小,此时玩家一定进入all-in状态）
+	int64 big_blind_chips = 9;                //大盲注额
+	int64 act_player_obj_id = 10;             //活跃玩家对象ID
+	repeated int32 comm_cards = 11 [packed=false];           //公共牌
+};
+
+// 德州桌台更新数据
+message DzUpdateData
+{
+	int32 round_index = 1;                    //对应的相关局数序号,目前仅用于调试方便
+	int32 table_status = 2;                   //当前状态,DzTableStatus
+	int32 relate_left_time = 3;               //各种状态下的相关剩余秒数
+	int32 cur_circle = 4;                     //当前圈数，从1开始，依次为 底牌圈、翻牌圈、转牌圈、河牌圈
+	int64 total_beton = 5;                    //总下注数
+	int64 circle_need_beton = 6;              //本圈最小需要下注多少筹码
+	int64 last_add_chips = 7;                 //上次加注筹码
+	int64 act_player_obj_id = 8;              //活跃玩家对象ID
+};
+
+// 德州进场数据
+message CMD_DZ_ENTER_DATA_SC
+{
+	int32 scene_tmp_id = 1;                       // 场景模板ID
+	int32 table_id = 2;                           // 桌台ID
+	DzAllData all_data = 3;                       // 当前数据
+	int64 min_buy_chips = 4;                      // 最小买入筹码
+	int64 max_buy_chips = 5;                      // 最大买入筹码
+};
+
+// 德州游戏开始
+message CMD_DZ_BEGIN_GAME_SC
+{
+	DzAllData all_data = 1;                       // 当前数据
+	int32 player_card_type = 2;                   // 玩家自身牌型
+	int32 player_card_power = 3;                  // 玩家自身牌力1代表1格
+	repeated int32 player_cards = 4 [packed=false];          //玩家自身手牌
+	repeated int32 player_final_cards = 5 [packed=false];    //凑成型的牌
+};
+
+// 德州开始新的一圈
+message CMD_DZ_BEGIN_CIRCLE_SC
+{
+	DzUpdateData upt_data = 1;                //桌台数据更新
+	int32 player_card_type = 2;               //玩家自身牌型
+	int32 player_card_power = 3;              //玩家自身牌力1代表1格
+	repeated int32 comm_cards = 4 [packed=false];            //公共牌，只有本轮新发的牌
+	repeated int32 player_final_cards = 5 [packed=false];    //凑成型的牌
+};
+
+// 玩家结果
+message DzPlayerMatchRet
+{
+	int64 object_id = 1;                          //玩家对象ID
+	repeated int32 player_cards = 2 [packed=false];              //玩家手牌(达到摊牌条件才有效，否则没有数据)
+	repeated int32 final_cards = 3 [packed=false];               //最终成型的牌(达到摊牌条件才有效，否则没有数据)
+	int32 final_card_type = 4;                    //最终牌型(达到摊牌条件才有效，否则没有数据)
+	int32 final_card_power = 5;                   //最终牌力(达到摊牌条件才有效，否则没有数据)
+	int64 win_chips = 6;                          //玩家本局损益，可正可负(赢得钱减去下注的钱)
+	int64 got_chips_from_pool = 7;                //最后结算后，玩家要从彩池中拿走多少筹码，只能正
+};
+
+// 返还筹码记录
+message DzPayBackChipsRecord
+{
+	int64 object_id = 1;                         //玩家对象ID
+	int64 chips = 2;                              //筹码
+}
+
+// 德州一局结束
+message CMD_DZ_END_GAME_SC
+{
+	int32 scene_tmp_id = 1;                                       // 场景模板ID
+	int32 table_id = 2;                                           // 桌台ID
+	repeated DzPlayerMatchRet ret_list = 3 [packed=false];                       // 结果列表(只包括最终还在座位上且没有弃牌的玩家)
+	repeated int32 comm_cards = 4 [packed=false];                                // 有可能在4圈之前就已经结束，但有1个以上玩家没有弃牌，需要补发剩余的公共牌，再进行摊牌比较           
+	repeated DzPayBackChipsRecord pay_back_rec = 5 [packed=false];               // 筹码退还记录(只有还在桌上的玩家才会退还)
+};
+
+// 换桌
+message CMD_DZ_CHANGE_ROOM_CS
+{	
+};
+
+// 德州刷新桌台数据
+message CMD_DZ_UPDATE_TABLE_DATA_SC
+{
+	DzUpdateData upt_data = 1;                    // 更新数据
+};
+
+// 活跃玩家改变
+message CMD_DZ_ACTIVE_PLAYER_CHANGE_SC
+{
+	int64 act_player_obj_id = 1;                  //活跃玩家ID
+	int64 left_time = 2;                          //剩余时间
+};
+
+// 盲注类型
+enum BlindType
+{
+	BlindType_None = 0;                      //不是盲注
+	BlindType_Small = 1;                     //大盲注
+	BlindType_Big = 2;                       //大盲注	
+};
+
+// 德州玩家更新数据
+message DzPlayerUptData
+{
+	int64 object_id = 1;                     //对应玩家的实体handle
+	int32 cur_status = 2;                     //对应玩家当前状态参见DzPlayerStatus枚举
+	uint32 flags = 3;                         //对应玩家一些标记位，按位或，具体值参见DzPlayerFlags
+	bool is_active_player = 4;                //是否是活跃玩家
+	int32 relate_left_time = 5;               //各种状态下的相关剩余秒数
+	int64 cur_circle_beton = 6;               //玩家本圈下注额
+	int64 cur_round_beton = 7;                //玩家本轮下注
+	int64 add_chips_before_start = 8;         //下局开始前将筹码补充到多少，0为不补充
+	int64 own_chips = 9;                      //拥有的德州筹码
+	int32 blind_type = 10;                    //盲注类型
+	bool is_banker = 11;                      //是否是庄家
+	int32 round_index = 12;                   //当前局数
+	int32 circle_index = 13;                  //当前圈数
+};
+
+// 德州刷新玩家数据
+message CMD_DZ_UPDATE_PLAYER_DATA_SC
+{
+	repeated DzPlayerUptData upt_data = 1 [packed=false];             //数据
+};
+
+// 德州玩家准备(暂时不用)
+message CMD_DZ_READY_CS
+{
+};
+
+// 德州玩家坐下
+message CMD_DZ_SIT_DOWN_CS
+{
+	int32 pos = 1;                            //座位号，从1开始，0表示有系统选择座位，若无空座则加入自动坐下列表
+};
+
+// 德州玩家全量数据
+message DzPlayerAllData
+{
+	int64 object_id = 1;                     //对应玩家的实体handle
+	int32 cur_status = 2;                     //对应玩家当前状态参见DzPlayerStatus枚举
+	uint32 flags = 3;                         //对应玩家一些逻辑状态,值为DzPlayerStatus中的枚举按位或
+	bool is_active_player = 4;                //是否是活跃玩家
+	int32 relate_left_time = 5;               //各种状态下的相关剩余秒数
+	int64 cur_circle_beton = 6;               //玩家本圈下注额
+	int64 cur_round_beton = 7;                //玩家本轮下注总额
+	int32 pos = 8;                            //玩家座位号从1开始
+	int32 player_card_type = 9;               //玩家自身牌型(发给自己且当前已发牌有效)
+	int32 player_card_power = 10;             //玩家自身牌力1代表1格(发给自己且当前已发牌有效)
+	repeated int32 player_cards = 11 [packed=false];         //玩家自身手牌(发给自己且当前已发牌有效)
+	int64 add_chips_before_start = 12;        //下局开始前将筹码补充到多少，0为不补充
+	int64 own_chips = 13;                     //拥有的德州筹码
+	int32 blind_type = 14;                    //盲注类型
+	bool is_banker = 15;                      //是否是庄家
+	int32 bet_way = 16;                       //压住方式
+	int32 round_index = 17;                   //当前局数
+	int32 circle_index = 18;                  //当前圈数
+	repeated int32 player_final_cards = 19 [packed=false];    //凑成型的牌
+};
+
+// 德州玩家坐下
+message CMD_DZ_SIT_DOWN_SC
+{
+	DzPlayerAllData player_data = 1;          // 数据
+	bool is_new = 2;                          // 是否是新加入的玩家
+};
+
+// 自动坐下信息
+message CMD_DZ_AUTO_SIT_DOWN_INFO_SC
+{
+	int32 all_wait_num = 1;                  //总共有多少人在等待
+	int32 my_pos = 2;                        //玩家在等待列表中的位置（从1开始，0表示没有在其中）
+};
+
+// 德州玩家战起
+message CMD_DZ_STAND_UP_CS
+{
+};
+
+// 德州玩家战起
+message CMD_DZ_STAND_UP_SC
+{
+	repeated int64 object_id = 1 [packed=false];                     //对应玩家的实体handle
+};
+
+// 德州玩家弃牌
+message CMD_DZ_DISCARD_CS
+{	
+};
+
+// 德州玩家下注方式
+enum DzBetonWay
+{
+	DZ_BETON_WAY_NONE = 0;        //未操作
+	DZ_BETON_WAY_PASS = 1;        //过
+	DZ_BETON_WAY_FOLLOW = 2;      //跟
+	DZ_BETON_WAY_ADD = 3;         //加注
+	DZ_BETON_WAY_ALLIN = 4;       //all-in
+	DZ_BETON_WAY_SMALL_BLIND = 5; //小盲注
+	DZ_BETON_WAY_BIG_BLIND = 6;   //大盲注
+};
+
+// 德州玩家下注
+message CMD_DZ_BETON_CS
+{
+	int32 round_index = 1;        //对应的相关局数序号
+	int32 circle_index = 2;       //对应的当前局的圈数
+	int64 chips = 3;              //下多少筹码，0表示过，其他填入数值，后台自己区分 加注、跟注、all-in的情况
+};
+
+// 德州玩家下注
+message CMD_DZ_BETON_SC
+{
+	int32 round_index = 1;        //对应的相关局数序号
+	int32 circle_index = 2;       //对应的当前局的圈数
+	int64 object_id = 3;          //对象ID
+	int32 beton_way = 4;          //方式
+	int64 chips = 5;              //此次下了多少筹码
+};
+
+// 买入筹码(设置下局开始前买入筹码的数量)
+message CMD_DZ_BUY_CHIPS_CS
+{
+	int64 buy_chips = 1;          // 下局开始前，“补充到”多少筹码，不得小于最小买入，不得大于最大买入
+};
+
+// 快速开始
+message CMD_DZ_QUICK_START_CS
+{
+};
+
+// 打赏荷官
+message CMD_DZ_REWARD_DEALER_CS
+{
+};
+
+// 打赏荷官
+message CMD_DZ_REWARD_DEALER_SC
+{
+	int64 role_id = 1;            // 打赏者的角色ID
+	int32 get_charm = 2;          // 获得的魅力值
+	int32 use_gold = 3;           // 消耗金币
+};
+
+// 荷官说话类型
+enum DealerSpeakType
+{
+	DEALER_SPEAK_TYPE_N_ROUND_NO_REWARD = 0;     //N场没人打赏
+	DEALER_SPEAK_TYPE_N_ROUND_GAME = 1;          //N场对局
+}
+
+// 服务器通知客户端，让荷官说话
+message CMD_DZ_DEALER_SPEAK_SC
+{
+	int32 speak_type = 1;         // 说话类型，对应DealerSpeakType
+};
+
+// 结束时亮牌
+message CMD_DZ_SHOW_CARD_WHEN_END_CS
+{
+	bool yes = 1;                 // true表示结束时亮牌，false表示不亮牌
+}
+
+// 结束时亮牌
+message CMD_DZ_SHOW_CARD_WHEN_END_SC
+{
+	bool yes = 1;                 // true表示结束时亮牌，false表示不亮牌
+}
+
+// 通知客户端体力场当前赛季结束
+message CMD_DZ_NOTIFY_TILI_GAME_CYCLE_END_SC
+{
+	int32 rank = 1;                                       //本次排名
+	repeated ResItem awards = 2 [packed=false];           //奖励
+}
+
+// 获取我当前的体力
+message CMD_GET_DZ_TILI_INFO_CS
+{
+}
+
+// 获取我当前的体力
+message CMD_GET_DZ_TILI_INFO_SC
+{
+	int32 tili = 1;                  // 当前拥有体力
+	int32 max_tili = 2;              // 体力值上限
+	int32 buy_chips_use_tili = 3;    // 购买筹码花费体力值
+	int64 buy_chips_num = 4;         // 购买多少筹码
+}
+
+// 获取体力场赛季信息
+message CMD_GET_DZ_TILI_CYCLE_RANK_INFO_CS
+{
+}
+
+// 获取体力场赛季信息
+message CMD_GET_DZ_TILI_CYCLE_RANK_INFO_SC
+{
+	bool is_open = 1;
+	int32 buy_chips_use_tili = 2;    // 购买筹码花费体力值
+	int64 buy_chips_num = 3;         // 购买多少筹码
+	int32 cycle_left_seconds = 4;    // 当前赛季结束剩余秒数
+	int32 my_rank = 5;               // 我的排名，-1表示未上榜
+	int64 my_grades = 6;             // 我的积分
+	repeated OneRankData rank_list = 7 [packed=false];      //排行数据
+	int64 min_join_gold = 8;         // 准入最小金币
+	int64 max_join_gold = 9;         // 准入最大金币
+}
+
+// 获取赛季奖励信息（全局获取一次就够了）
+message CMD_GET_DZ_TILI_CYCLE_AWARD_INFO_CS
+{
+}
+
+// 体力场赛季排行奖励
+message TiliRankAward
+{
+	int32 start_rank = 1;            // 开始排名
+	int32 end_rank = 2;              // 结束排名, -1表示无上限
+	ResItem award = 3;               // 奖品
+}
+
+// 获取赛季奖励信息
+message CMD_GET_DZ_TILI_CYCLE_AWARD_INFO_SC
+{
+	repeated TiliRankAward awards = 1 [packed=false];           //奖励信息列表
+}
+
+//通知我的体力场赛季信息
+message CMD_NOTIFY_MY_DZ_TILI_CYCLE_INFO_SC
+{
+	int32 cycle_left_seconds = 1;    // 当前赛季结束剩余秒数
+	int64 my_grades = 2;             // 我的积分
+	int32 my_rank = 3;               // 我的排名,-1表示未上榜
+	int64 cycle_begin_time = 4;      // 赛季开始时间
+	int64 cycle_end_time = 5;        // 赛季结束时间
+}
+
+//退出体力场后通知弹窗
+message CMD_NOTIFY_QUIT_DZ_TILI_GAME_INFO_SC
+{
+	int32 cycle_left_seconds = 1;    // 当前赛季结束剩余秒数
+	int64 my_grades = 2;             // 我的积分
+	int32 my_rank = 3;               // 我的排名,-1表示未上榜
+	int64 cycle_begin_time = 4;      // 赛季开始时间
+	int64 cycle_end_time = 5;        // 赛季结束时间
+	int64 cur_chips = 6;             // 当前筹码
+}
+
+// 角色基础信息
+message PlayerBasicInfo
+{
+	int64     born_id = 1;               // 角色ID
+	string    name = 2;                  // 昵称
+	string    self_head = 3;             // 头像
+	int32     role_lv = 4;               // 角色等级
+	int32     vip_lv = 5;                // VIP等级
+	int64     own_gold = 6;              // 拥有金币
+	int32     charm = 7;                 // 魅力值
+	int32     scene_temp_id = 8;         // 玩家当前所在场景的模板ID，0为离线，1为大厅，其他为具体的游戏场次
+	uint32    scene_id = 9;              // 具体的场景ID
+	int64     last_offline_time = 10;    // 上次下线时间(仅当 scene_temp_id == 0 时有效)
+	int32     sys_head = 11;             // 系统头像
+	int32     sex = 12;                  // 性别
+	int32     exp = 13;                  // 当前经验
+	int32     max_exp = 14;              // 升级所需经验
+};
+
+// 牌技信息
+message PlayerCardSkillInfo
+{
+	int32    all_game_count = 1;       // 总牌局数
+	int32    win_game_count = 2;       // 赢牌局数
+	int32    join_game_count = 3;      // 入局次数
+	int32    show_card_count = 4;      // 摊牌次数
+	int32    best_card_type = 5;       // 最佳牌型
+	int64    best_cards = 6;           // 最佳牌(按位记录,从低到高每一位记录一张牌)
+	int64    max_win_chips = 7;        // 最多赢取筹码
+};
+
+// 社交信息
+message PlayerSocialContactInfo
+{
+	int32    friend_num = 1;           // 好友数量
+	string address = 2;                // 所在地
+	string signature = 3;              // 个性签名
+	repeated string photos = 4 [packed=false];        // 照片墙
+};
+
+// 获取用户基本信息
+message CMD_GET_PLAYER_BASIC_INFO_CS
+{
+	repeated int64 role_id = 1 [packed=false];                // 用户ID列表
+	int32 pri_key = 2;                         // 透传
+};
+
+// 获取用户基本信息
+message CMD_GET_PLAYER_BASIC_INFO_SC
+{
+	repeated PlayerBasicInfo data = 1 [packed=false];    // 用户信息
+	int32 pri_key = 2;                         // 透传
+};
+
+// 玩家详细信息
+message PlayerDetailedInfo
+{
+	PlayerBasicInfo basic_info = 1;          // 基本信息
+	PlayerCardSkillInfo card_skill_info = 2; // 牌技信息
+};
+
+// 获取玩家详细信息(包括基本信息，牌技信息)
+message CMD_GET_PLAYER_DETAILED_INFO_CS
+{
+	repeated int64 role_id = 1 [packed=false];                // 用户ID列表
+	int32 pri_key = 2;                         // 透传
+};
+
+// 获取玩家详细信息(包括基本信息，牌技信息)
+message CMD_GET_PLAYER_DETAILED_INFO_SC
+{
+	repeated PlayerDetailedInfo data = 1 [packed=false];    // 用户信息
+	int32 pri_key = 2;                         // 透传
+};
+
+// 玩家全量信息
+message PlayerFullInfo
+{
+	PlayerBasicInfo basic_info = 1;          // 基本信息
+	PlayerCardSkillInfo card_skill_info = 2; // 牌技信息
+	PlayerSocialContactInfo social_info = 3; // 社交信息
+};
+
+// 获取玩家全量信息(包括基本信息，牌技信息，社交信息)
+message CMD_GET_PLAYER_FULL_INFO_CS
+{
+	repeated int64 role_id = 1 [packed=false];                // 用户ID列表
+	int32 pri_key = 2;                         // 透传
+};
+
+// 获取玩家全量信息(包括基本信息，牌技信息，社交信息)
+message CMD_GET_PLAYER_FULL_INFO_SC
+{
+	repeated PlayerFullInfo data = 1 [packed=false];    // 用户信息
+	int32 pri_key = 2;                         // 透传
+};
+
+// 关注类型
+enum FollowType
+{
+	FOLLOW_TYPE_FOLLOW = 0;             // 关注
+	FOLLOW_TYPE_BEEN_FOLLOW = 1;        // 被关注
+	FOLLOW_TYPE_FORBID_BEEN_FOLLOW = 2; // 禁止被关注
+
+	FOLLOW_TYPE_COUNT = 3;
+};
+
+message CMD_GET_FOLLOW_LIST_CS
+{
+	repeated int32 follow_type = 1 [packed=false];      // 类型,可同时请求多种
+}
+
+// 一个关注列表
+message OneFollowList
+{
+	int32 follow_type = 1;             // 类型
+	repeated int64 roles = 2 [packed=false];          // 玩家ID列表
+}
+
+// 加载好友列表
+message CMD_GET_FOLLOW_LIST_SC
+{
+	repeated OneFollowList lists = 1 [packed=false];  //各种类型列表
+};
+
+// 删除关注信息
+message CMD_DEL_FOLLOW_INFO_CS
+{
+	int32 follow_type = 1;              // 关注类型
+	int64 role_id = 2;                  // 角色ID
+}
+
+// 删除关注信息
+message CMD_DEL_FOLLOW_INFO_SC
+{
+	int32 follow_type = 1;              // 关注类型
+	int64 role_id = 2;                  // 角色ID
+}
+
+// 禁止被关注
+message CMD_FORBID_BEEN_FOLLOW_CS
+{
+	int64 role_id = 1;                  // 角色ID
+}
+
+// 禁止被关注
+message CMD_FORBID_BEEN_FOLLOW_SC
+{
+	int64 role_id = 1;                  // 角色ID
+}
+
+//通知消息,A关注了B,用于牌座上的表现
+message CMD_A_FOLLOW_B_SC
+{
+	int64 role_id_a = 1;                // A的ID，即发起关注方
+	int64 role_id_b = 2;                // B的ID，即被关注方
+}
+
+//关注某人
+message CMD_FOLLOW_TO_CS
+{
+	int64 roleid = 1;                   // 玩家ID
+}
+
+//关注某人
+message CMD_FOLLOW_TO_SC
+{
+	int64 roleid = 1;                   // 玩家ID
+}
+
+//服务器主动通知，客户端收到此消息，表示别人取消了我的关注，应将对方从我的关注列表中删除
+message CMD_NOTIFY_DEL_FROM_FOLLOW_LIST_SC
+{
+	int64 roleid = 1;                   // 玩家ID
+}
+
+// 任务状态
+enum TaskStatus
+{
+	TASK_STATUS_WORKING = 0;                 //未完成
+	TASK_STATUS_FINISHED = 1;                //己完成
+	TASK_STATUS_HASGOTPRIZE = 2;             //已领取
+}
+
+// 任务类型
+enum TaskType
+{
+	TASK_TYPE_ACHIEVEMENT_TASK = 0;          // 成就任务
+	TASK_TYPE_DAILY_TASK = 1;                // 每日任务
+	TASK_TYPE_WEEKLY_TASK = 2;               // 每周任务
+
+	TASK_TYPE_COUNT = 3;
+}
+
+// 任务
+message OneTask
+{
+	int32 task_id = 1;                     //任务ID
+	int32 task_status = 2;                 //任务状态,参见EnTaskStatus
+	string task_name = 3;                  //名字
+	string task_desc = 4;                  //描述
+	int64 cur_value = 5;                   //当前数值
+	int64 target_value = 6;                //目标数值
+	repeated ResItem awards = 7 [packed=false];           //奖励
+}
+
+//获取任务列表
+message CMD_GET_TASK_LIST_CS
+{
+	int32 task_type = 1;                  // 任务类型，参见TaskType枚举
+}
+
+//获取任务列表
+message CMD_GET_TASK_LIST_SC
+{
+	int32 task_type = 1;                  // 任务类型，参见TaskType枚举
+	repeated OneTask tasks = 2 [packed=false];           // 任务列表
+}
+
+//领取任务奖励
+message CMD_GET_TASK_AWARD_CS
+{
+	int32 task_id = 1;                    // 任务ID
+}
+
+//领取任务奖励
+message CMD_GET_TASK_AWARD_SC
+{
+	int32 task_id = 1;                    // 任务ID
+}
+
+// 道具类型
+enum ResType
+{
+	RES_TYPE_NONW = 0;
+
+	RES_TYPE_GOLD = 1;                    // 金币
+	RES_TYPE_DIAMOND = 2;                 // 砖石
+	RES_TYPE_TILI = 3;                    // 体力
+	RES_TYPE_STABLE_GIFT_BAG = 101;       // 礼包类（稳定开出相同道具）
+	RES_TYPE_RANDOM_GIFT_BAG = 102;       // 礼包类（随机开出一个道具）
+	RES_TYPE_MEDICINE = 103;              // 药水类
+}
+
+//获取道具信息
+message CMD_GET_RES_INFO_CS
+{
+};
+
+//获取道具信息
+message CMD_GET_RES_INFO_SC
+{
+	repeated ResItem res_info = 1 [packed=false];        // 拥有道具列表
+};
+
+// 商品状态枚举
+enum CommodityState
+{
+	COMMODITY_STATE_NONE = 0;
+
+	COMMODITY_STATE_SHELVE = 1;     // 上架
+	COMMODITY_STATE_POPULAR = 2;    // 火爆
+	COMMODITY_STATE_UNSHELVE = 3;   // 下架(下架商品服务器不会发给客户端)
+
+	COMMODITY_STATE_MAX = 4;
+}
+
+// 商品
+message Commodity
+{
+	int32 commodity_id = 1;               // 商品ID
+	int32 res_id = 2;                     // 对应道具
+	int32 res_num = 3;                    // 对应道具数量
+	int32 pay_res_id = 4;                 // 花费的道具ID
+	int32 price = 5;                      // 现价
+	int32 original_price = 6;             // 原价
+	string commodity_desc = 7;            // 商品描述
+	int32 commodity_state = 8;            // 商品状态，对应CommodityState枚举
+	int32 daily_limit_num = 9;            // 每日限购次数
+	int32 today_buy_times = 10;           // 玩家今日已经买了几次
+	int32 today_surplus_stocks = 11;      // 今日剩余的库存量
+	int32 all_surplus_stocks = 12;        // 总共剩余库存量
+	int64 begin_effictive_time = 13;      // 起始有效时间
+	int64 end_effictive_time = 14;        // 结束有效时间
+};
+
+// 商店类型枚举
+enum ShopType
+{
+	SHOP_TYPE_NONW = 0;
+
+	SHOP_TYOE_COST_GOLD = 1;             // 金币购买
+	SHOP_TYPE_COST_DIAMOND = 2;          // 钻石购买
+	SHOP_TYPE_COST_RES = 3;              // 道具购买
+
+	SHOP_TYPE_MAX = 4;
+}
+
+//获取商店信息
+message CMD_GET_SHOP_INFO_CS
+{
+	int32 shop_type = 1;                  // 商店类型，对应ShopType枚举
+};
+
+//获取商店信息
+message CMD_GET_SHOP_INFO_SC
+{
+	int32 shop_type = 1;                  // 商店类型，对应ShopType枚举
+	repeated Commodity commodities = 2 [packed=false];   // 商品列表
+};
+
+//购买商品
+message CMD_BUY_COMMODITY_CS
+{
+	int32 commodity_id = 1;               // 购买的商品ID
+};
+
+//购买商品
+message CMD_BUY_COMMODITY_SC
+{
+	int32 commodity_id = 1;               // 购买的商品ID
+};
+
+// 开礼包
+message CMD_OPEN_GIFT_BAG_CS
+{
+	int32 gift_res_id = 1;                // 礼包道具ID
+	int32 open_num = 2;                   // 要开多少个（至少为1）
+};
+
+// 开礼包
+message CMD_OPEN_GIFT_BAG_SC
+{
+	int32 gift_res_id = 1;                // 礼包道具ID
+	int32 open_num = 2;                   // 开了几个礼包
+	repeated ResItem items = 3 [packed=false];           // 开出的所有东西
+};
