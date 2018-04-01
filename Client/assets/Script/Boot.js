@@ -1,7 +1,6 @@
 
 var app = require("App")
-var HttpHandler = require("Network/HttpHandler")
-var MessageBuilder = require("Network/MessageBuilder")
+var Network = require("Network/Network")
 
 cc.Class({
     extends: cc.Component,
@@ -19,15 +18,14 @@ cc.Class({
     },
 
     onStartButtonClick(node){
-        // var user = {
-        //     name : "asdffasdf",
-        //     password : "111111111",
-        //     addr : "52541aaaa"
-        // }
-        // var instance = HttpHandler.instance();
-        // instance.post("http://localhost:12345/auth", function(err, data){
-        //     cc.log(data);
-        // }, JSON.stringify(user), false);
+        var user = {
+            name : "asdffasdf",
+            password : "111111111",
+            addr : "52541aaaa"
+        }
+        Network.instance().httpPost("http://localhost:12345/auth", JSON.stringify(user), function(err, data){
+            cc.log(data);
+        }, false);
 
         // var protoFile = "protocol/KConnectProto";  
         // cc.loader.loadRes(protoFile, function (err, proto){  
@@ -36,8 +34,8 @@ cc.Class({
         //     var Builder = ProtoBuf.protoFromString(proto);  
         // });  
 
-        MessageBuilder.instance().loadProtos(["protocol/CSProto", "protocol/KConnectProto"], function(){
+        // MessageBuilder.instance().loadProtos(["protocol/CSProto", "protocol/KConnectProto"], function(){
             
-        });
+        // });
     }
 });
