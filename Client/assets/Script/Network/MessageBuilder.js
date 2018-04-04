@@ -25,7 +25,7 @@ var MessageBuilder = cc.Class({
     loadProtos: function(files, callback){
         var loadCompleted = function(){
             this._messageRoot = this._builder.build();
-            this._commandHeader = this.build("kcpackc", true);
+            this._commandHeader = this.build("CMD_BASE_CS", true);
             this._commandBody = this.build("WX_CMD_PROC_CS", true); 
             this._messageHeader = this.build("packc");
     
@@ -217,56 +217,56 @@ var MessageBuilder = cc.Class({
     },
 
     _moduleTest: function () {
-        var obj = this.build("WX_CMD_AUTH_CS", true);
-        obj.game_id = 10000;
-        obj.auth_type = 1;
-        obj.account = "sssssssss";
-        obj.qwd_md5 = "12485242";
+        // var obj = this.build("WX_CMD_AUTH_CS", true);
+        // obj.game_id = 10000;
+        // obj.auth_type = 1;
+        // obj.account = "sssssssss";
+        // obj.qwd_md5 = "12485242";
 
-        var buffer = this.encode(obj, true);
-        var obj2 = this.decode(buffer, true);
+        // var buffer = this.encode(obj, true);
+        // var obj2 = this.decode(buffer, true);
 
-        var obj3 = this.build("CMD_ERROR_SC");
-        obj3.msg_box_type = 1;
-        obj3.error_code = 1;
-        obj3.cmd_id = 2;
-        obj3.title = "12485242";
-        obj3.content = "asdfasdfasdf";
+        // var obj3 = this.build("CMD_ERROR_SC");
+        // obj3.msg_box_type = 1;
+        // obj3.error_code = 1;
+        // obj3.cmd_id = 2;
+        // obj3.title = "12485242";
+        // obj3.content = "asdfasdfasdf";
 
-        var buffer2 = this.encode(obj3);
-        var obj4 = this.decode(buffer2, false);
+        // var buffer2 = this.encode(obj3);
+        // var obj4 = this.decode(buffer2, false);
 
-        var obj5 = this.build("CMD_ROLE_MISC_SC");
-        var data = this.build("RoleMisc");
-        obj5.data = data;
+        // var obj5 = this.build("CMD_ROLE_MISC_SC");
+        // var data = this.build("RoleMisc");
+        // obj5.data = data;
 
 
-        var obj7 = this.autoBuild("CMD_ROLE_MISC_SC");
-        obj7.data.object_id = 1;
+        // var obj7 = this.autoBuild("CMD_ROLE_MISC_SC");
+        // obj7.data.object_id = 1;
 
-        obj7.data.base.sex = 1;
-        obj7.data.base.map_id = 2;
-        obj7.data.base.name = "test";
-        obj7.data.base.self_def_photo = "http://test";
-        obj7.data.base.mobile = "13688026101";
+        // obj7.data.base.sex = 1;
+        // obj7.data.base.map_id = 2;
+        // obj7.data.base.name = "test";
+        // obj7.data.base.self_def_photo = "http://test";
+        // obj7.data.base.mobile = "13688026101";
 
-        obj7.data.privilege.privilege_flag = 32;
-        obj7.data.privilege.vip_level = 32;
+        // obj7.data.privilege.privilege_flag = 32;
+        // obj7.data.privilege.vip_level = 32;
 
-        obj7.data.online_gift.have_next_gift = false;
-        obj7.data.online_gift.next_seconds = 2;
-        obj7.data.online_gift.gift_gold = 3;
-        obj7.data.online_gift.vip_gold_ratio = 4;
+        // obj7.data.online_gift.have_next_gift = false;
+        // obj7.data.online_gift.next_seconds = 2;
+        // obj7.data.online_gift.gift_gold = 3;
+        // obj7.data.online_gift.vip_gold_ratio = 4;
 
-        obj7.data.next_online_gift.have_next_gift = false;
-        obj7.data.next_online_gift.next_seconds = 2;
-        obj7.data.next_online_gift.gift_gold = 3;
-        obj7.data.next_online_gift.vip_gold_ratio = 4;
+        // obj7.data.next_online_gift.have_next_gift = false;
+        // obj7.data.next_online_gift.next_seconds = 2;
+        // obj7.data.next_online_gift.gift_gold = 3;
+        // obj7.data.next_online_gift.vip_gold_ratio = 4;
 
-        var buffer5 = this.encode(obj7);
-        var obj8 = this.decode(buffer5, false);
+        // var buffer5 = this.encode(obj7);
+        // var obj8 = this.decode(buffer5, false);
 
-        cc.log("********* MessageBuilder: Test Success!*************");
+        // cc.log("********* MessageBuilder: Test Success!*************");
     }
 });
 
