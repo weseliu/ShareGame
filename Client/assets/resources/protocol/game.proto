@@ -19,7 +19,7 @@ message CSMSG
 
 message SCMSG
 {
-	MessageType cmd         = 1;
+	MessageType msg         = 1;
 	int32       ret_code    = 2;
 	bytes       body        = 3;
 }

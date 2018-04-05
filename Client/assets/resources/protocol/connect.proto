@@ -24,19 +24,6 @@ message SCPACK
 	bytes       body        = 3;
 }
 
-message CSMSG
-{
-	CommandType cmd = 1;
-	bytes body = 2;
-}
-
-message SCMSG
-{
-	CommandType cmd         = 1;
-	int32       ret_code    = 2;
-	bytes       body        = 3;
-}
-
 message CMD_ERROR_SC
 {
 	int32  ret_code = 1;
