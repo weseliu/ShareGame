@@ -155,7 +155,6 @@ var LoginManager = cc.Class({
     },
 
     sendAccountLogin: function(){
-        this.notifyLoginProgress(app.strings.LAUNCH_TIP_ACCOUNT_LOGIN, 1.0);
         var aloginObj = app.messageBuilder().autoBuild("CMD_ALOGIN_CS");
         aloginObj.verion_type = 1;
         aloginObj.account = app.platformManager().deviceInfo.getDeviceUniqueId();
