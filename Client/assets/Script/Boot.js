@@ -1,12 +1,13 @@
 
 var app = require("App")
 var Network = require("Network/Network")
+var MessageBuilder = require("Network/MessageBuilder")
 var LoginManager = require("Session/LoginManager")
 
 cc.Class({
     extends: cc.Component,
 
-    onLoad () {
+    onLoad (){
         
     },
 
@@ -35,7 +36,7 @@ cc.Class({
         //     var Builder = ProtoBuf.protoFromString(proto);  
         // });  
 
-        MessageBuilder.instance().loadProtos(["protocol/connect.proto"], function(){
+        MessageBuilder.instance().loadProtos(["protocol/connect", "protocol/game"], function(){
             LoginManager.instance().login(function(isSuccess, errType, errInfo){
                 cc.log("isSuccess : " + isSuccess + ", errType : " + errType + ", errInfo" + errInfo);
             });

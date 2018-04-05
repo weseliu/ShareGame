@@ -4,9 +4,9 @@ var app = require("../App")
 var MessageBuilder = cc.Class({
     _builder: null,
     _messageRoot: null,
-    _commandHeader: null,
-    _commandBody: null,
-    _messageHeader: null,
+    _csPack: null,
+    _logicBody: null,
+    _csMsg: null,
 
     statics :{
         _instance : null,
@@ -25,9 +25,9 @@ var MessageBuilder = cc.Class({
     loadProtos: function(files, callback){
         var loadCompleted = function(){
             this._messageRoot = this._builder.build();
-            this._commandHeader = this.build("CMD_BASE_CS", true);
-            this._commandBody = this.build("WX_CMD_PROC_CS", true); 
-            this._messageHeader = this.build("packc");
+            this._csPack = this.build("CSPACK", true);
+            this._logicBody = this.build("CMD_LOGIC_CS", true);
+            this._csMsg = this.build("CSMSG");
     
             this.buildProtoEnum();
             this._moduleTest();
@@ -88,8 +88,6 @@ var MessageBuilder = cc.Class({
             message = message.substring(0,message.lastIndexOf('_CS'));
         else if(message.endWith("_SC"))
             message = message.substring(0,message.lastIndexOf('_SC'));
-
-
         return message;
     },
 
@@ -142,43 +140,37 @@ var MessageBuilder = cc.Class({
 
     _encodeCommand: function (messageObj, messageType) {
         var base = this._getMessageBase(true);
-        this._commandHeader.cmd = base.CommandType[messageType];
-        this._commandHeader.body = messageObj.toArrayBuffer();
+        this._csPack.cmd = base["CommandType"][messageType];
+        this._csPack.body = messageObj.toArrayBuffer();
 
-        return this._commandHeader.toArrayBuffer();
+        return this._csPack.toArrayBuffer();
     },
 
     _encodeMessage: function (messageObj, messageType) {
         var msgBase = this._getMessageBase(false);
-        this._messageHeader.cmd = msgBase.CommandType[messageType];
-        this._messageHeader.seq_id = 0;
-        this._messageHeader.body = messageObj.toArrayBuffer();
+        this._csMsg.cmd = msgBase["MessageType"][messageType];
+        this._csMsg.body = messageObj.toArrayBuffer();
 
-        this._commandBody.mask = 10;
-        this._commandBody.game_proto_pkg = this._messageHeader.toArrayBuffer();
+        this._logicBody.logic_pkg = this._csMsg.toArrayBuffer();
 
-        var cmdBase = this._getMessageBase(true);
-        this._commandHeader.cmd = cmdBase.CommandType.WX_CMD_PROC;
-        this._commandHeader.body = this._commandBody.toArrayBuffer();
-
-        return this._commandHeader.toArrayBuffer();
+        return this._encodeCommand(this._logicBody, "CMD_LOGIC");
     },
 
     decode: function (buffer, uploadMessage) {
         var cmdBase = this._getMessageBase(true);
-        var packageObj = cmdBase["kcpacks"].decode(buffer);
+        var packageObj = cmdBase["SCPACK"].decode(buffer);
 
         var commandName = this._getCommandNameByValue(packageObj.cmd);
         var commandObjName = this.getMessageName(commandName, uploadMessage);
         var commandObj = cmdBase[commandObjName].decode(packageObj.body);
-        if (packageObj.cmd != cmdBase.CommandType.WX_CMD_PROC) {
+        if (packageObj.cmd != cmdBase["CommandType"]["CMD_LOGIC"]) {
             return commandObj;
         }
 
         var msgBase = this._getMessageBase(false);
-        var messagePkgObj = msgBase["packs"].decode(commandObj.game_proto_pkg);
+        var messagePkgObj = msgBase["SCMSG"].decode(commandObj["logic_pkg"]);
 
-        var messageName = this._getMessageNameByValue(messagePkgObj.cmd);
+        var messageName = this._getMessageNameByValue(messagePkgObj.msg);
         var messageObjName = this.getMessageName(messageName, uploadMessage);
         var messageObj = msgBase[messageObjName].decode(messagePkgObj.body);
 
@@ -186,11 +178,11 @@ var MessageBuilder = cc.Class({
     },
 
     _getMessageBase: function (isCommand) {
-        return isCommand ? this._messageRoot.KConnect : this._messageRoot.CSProto;
+        return isCommand ? this._messageRoot.connect : this._messageRoot.game;
     },
 
     _isCommand : function(message){
-        if(cc.isFunction(this._messageRoot.KConnect[message])) {
+        if(cc.isFunction(this._messageRoot.connect[message])) {
             return true;
         }
         return false;
@@ -198,8 +190,8 @@ var MessageBuilder = cc.Class({
 
     _getCommandNameByValue: function (value) {
         var cmdBase = this._getMessageBase(true);
-        for (var cmd in cmdBase.CommandType) {
-            if (cmdBase.CommandType[cmd] === value) {
+        for (var cmd in cmdBase["CommandType"]) {
+            if (cmdBase["CommandType"][cmd] === value) {
                 return cmd;
             }
         }
@@ -208,8 +200,8 @@ var MessageBuilder = cc.Class({
 
     _getMessageNameByValue: function (value) {
         var msgBase = this._getMessageBase(false);
-        for (var msg in msgBase.CommandType) {
-            if (msgBase.CommandType[msg] === value) {
+        for (var msg in msgBase["MessageType"]) {
+            if (msgBase["MessageType"][msg] === value) {
                 return msg;
             }
         }

@@ -94,6 +94,11 @@ var LoginManager = cc.Class({
     },
 
     _onQueryAddressFail : function(respJson){
+        if(respJson == null){
+            respJson = {};
+            respJson.ret_code = -1;
+            respJson.ret_desc = "no response!";
+        }
         this._onLoginCallback(false, respJson.ret_code, respJson.ret_desc);
     },
 
@@ -114,26 +119,26 @@ var LoginManager = cc.Class({
 
     onConnectCloseEvent: function() {
         cc.log("LoginManager : onConnectCloseEvent");
-        app.messageBox(app.strings.CONNECT_CLOSED_TIP, [app.CONNECT_BTN, app.CANCEL_BTN], 0, function(button){
-            if(button == app.ButtonType.OK){
-                this.login(function(isSuccess, errType, errInfo){
-                    if(isSuccess === false){
-                        app.messageBox(app.strings.LOGIN_FAIL_TIP, [app.OK_BTN], 0, function(){
-                            this.doLogout();
-                        }.bind(this));
-                    }
-                }.bind(this), null, false);
-            } else {
-                this.doLogout();
-            }
-        }.bind(this));
+        // app.messageBox(app.strings.CONNECT_CLOSED_TIP, [app.CONNECT_BTN, app.CANCEL_BTN], 0, function(button){
+        //     if(button == app.ButtonType.OK){
+        //         this.login(function(isSuccess, errType, errInfo){
+        //             if(isSuccess === false){
+        //                 app.messageBox(app.strings.LOGIN_FAIL_TIP, [app.OK_BTN], 0, function(){
+        //                     this.doLogout();
+        //                 }.bind(this));
+        //             }
+        //         }.bind(this), null, false);
+        //     } else {
+        //         this.doLogout();
+        //     }
+        // }.bind(this));
     },
 
     sendAuthMessage: function(){
-        var authObj = MessageBuilder.instance().autoBuild("WX_CMD_AUTH_CS");
+        var authObj = MessageBuilder.instance().autoBuild("CMD_AUTH_CS");
         authObj.game_id = 10;
         authObj.identity_token = this._identityToken;
-        Network.instance().sendMessage(authObj, [app.loginManager(), this.onAuthMessage.bind(this)]);
+        Network.instance().sendMessage(authObj, [this, this.onAuthMessage.bind(this)]);
     },
 
     onAuthMessage: function(authJson) {

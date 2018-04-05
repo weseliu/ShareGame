@@ -25,8 +25,8 @@ var SocketHandler = cc.Class({
     },
 
     _onCloseCallback: function (closeEvent) {
-        app.dumpMessage("closeEvent : wasClean = {0}, code = {1}, reason = {2}".Format(
-                        closeEvent.wasClean, closeEvent.code, closeEvent.reason));
+        // app.dumpMessage("closeEvent : wasClean = {0}, code = {1}, reason = {2}".Format(
+        //                 closeEvent.wasClean, closeEvent.code, closeEvent.reason));
         this._socketClient = null;
         if(this._closeEventCallback != null){
             this._closeEventCallback(closeEvent);

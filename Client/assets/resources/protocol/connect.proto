@@ -4,20 +4,33 @@ package connect;
 
 enum CommandType
 {
-	CMD_ZERO_PLACEHOLDER = 0x0;
-	CMD_ERROR            = 0x0001;
-	CMD_AUTH             = 0x0010;
-	CMD_REPLAY           = 0x0012;
-	CMD_LOGIC            = 0x0060;
+	CMD_ZERO_PLACEHOLDER = 0;
+	CMD_ERROR            = 1;
+	CMD_AUTH             = 2;
+	CMD_REPLAY           = 3;
+	CMD_LOGIC            = 4;
 }
 
-message CMD_BASE_CS
+message CSPACK
 {
 	CommandType cmd = 1;
 	bytes body = 2;
 }
 
-message CMD_BASE_SC
+message SCPACK
+{
+	CommandType cmd         = 1;
+	int32       ret_code    = 2;
+	bytes       body        = 3;
+}
+
+message CSMSG
+{
+	CommandType cmd = 1;
+	bytes body = 2;
+}
+
+message SCMSG
 {
 	CommandType cmd         = 1;
 	int32       ret_code    = 2;
@@ -59,12 +72,10 @@ message CMD_REPLAY_SC
 
 message CMD_LOGIC_CS
 {
-	uint32 logic_type = 1;
 	bytes logic_pkg = 2;
 }
 
 message CMD_LOGIC_SC
 {
-	uint32 logic_type = 1;
 	bytes logic_pkg = 2;
 }

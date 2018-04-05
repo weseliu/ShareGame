@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package game;
+
+enum MessageType
+{
+	MSG_ZERO_PLACEHOLDER = 0;
+	MSG_ERROR = 1;
+	MSG_PING = 2;
+	MSG_LOGIN = 3;
+	MSG_KICKOUT = 4;
+}
+
+message CSMSG
+{
+	MessageType msg = 1;
+	bytes body = 2;
+}
+
+message SCMSG
+{
+	MessageType cmd         = 1;
+	int32       ret_code    = 2;
+	bytes       body        = 3;
+}
