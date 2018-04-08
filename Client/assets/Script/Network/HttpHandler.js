@@ -13,7 +13,7 @@ var HttpHandler = cc.Class({
 
         var params = "";
         if (typeof(data) == "object") {
-            for (key in data) {
+            for (var key in data) {
                 params += (key + "=" + data[key] + "&");
             }
         } else {

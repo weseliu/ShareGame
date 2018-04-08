@@ -71,7 +71,7 @@ var LoginManager = cc.Class({
     queryServerAddress: function() {
         var requestInfo = {
             "user_channel": "001",
-            "acc": "111111111111111111111111",
+            "acc": "18982102190",
             "pwd": "",
             "access_token": ""
         };
