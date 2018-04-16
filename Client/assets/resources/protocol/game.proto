@@ -23,3 +23,14 @@ message SCMSG
 	int32       ret_code    = 2;
 	bytes       body        = 3;
 }
+
+message MSG_LOGIN_CS
+{
+	int64				role_id = 	1;
+}
+
+message MSG_LOGIN_SC
+{
+	int32       ret_code    = 1;
+	bytes       ret_msg    = 2;
+}
