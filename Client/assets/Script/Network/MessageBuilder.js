@@ -148,7 +148,7 @@ var MessageBuilder = cc.Class({
 
     _encodeMessage: function (messageObj, messageType) {
         var msgBase = this._getMessageBase(false);
-        this._csMsg.cmd = msgBase["MessageType"][messageType];
+        this._csMsg.msg = msgBase["MessageType"][messageType];
         this._csMsg.body = messageObj.toArrayBuffer();
 
         this._logicBody.logic_pkg = this._csMsg.toArrayBuffer();

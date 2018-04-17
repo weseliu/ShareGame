@@ -57,9 +57,9 @@ var LoginManager = cc.Class({
             this._loginCallback = null;
         }
 
-        if(isSuccess){
-            this._startPingMessageLoop(true);
-        }
+        // if(isSuccess){
+        //     this._startPingMessageLoop(true);
+        // }
     },
 
     notifyLoginProgress: function(content, percent){
@@ -155,18 +155,9 @@ var LoginManager = cc.Class({
     },
 
     sendAccountLogin: function(){
-        var aloginObj = app.messageBuilder().autoBuild("CMD_ALOGIN_CS");
-        aloginObj.verion_type = 1;
-        aloginObj.account = app.platformManager().deviceInfo.getDeviceUniqueId();
-        aloginObj.name = app.platformManager().deviceInfo.getDeviceName();
-        aloginObj.client_ver = app.platformManager().deviceInfo.getPackageVersion();
-        aloginObj.channel = app.platformManager().deviceInfo.getChannelCode();
-        aloginObj.operaters_type = app.platformManager().deviceInfo.getMobileOperatorsType();
-        var location = app.platformManager().deviceInfo.getLocation();
-        aloginObj.longitude = location.longitude;
-        aloginObj.latitude = location.latitude;
-
-        Network.instance().sendMessage(aloginObj, [app.loginManager(), this.onAccountLogin.bind(app.loginManager())]);
+        var loginObj = MessageBuilder.instance().autoBuild("MSG_LOGIN_CS");
+        loginObj.role_id = 10;
+        Network.instance().sendMessage(loginObj, [this, this.onAccountLogin.bind(this)]);
     },
 
     onAccountLogin: function(loginJson){
@@ -174,12 +165,12 @@ var LoginManager = cc.Class({
             return;
         }
 
-        if(loginJson.result === 0){
+        if(loginJson.ret_code === 0){
             this._isLoginSuccess = true;
             cc.log("onAccountLogin : login success!");
             this._onLoginCallback(true, null, null);
         } else {
-            cc.log("onAccountLogin : " + loginJson.hint_msg);
+            cc.log("onAccountLogin : " + loginJson["ret_msg"]);
             this._onLoginCallback(false, "onAccountLogin", loginJson);
         }
     }
