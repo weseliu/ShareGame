@@ -32,5 +32,5 @@ message MSG_LOGIN_CS
 message MSG_LOGIN_SC
 {
 	int32       ret_code    = 1;
-	bytes       ret_msg    = 2;
+	string       ret_msg    = 2;
 }
