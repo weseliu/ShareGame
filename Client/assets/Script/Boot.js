@@ -25,6 +25,7 @@ var Boot = cc.Class({
 
     start : function() {
         this.initModules();
+        this.loadProto();
     },
 
     update : function(dt) {
@@ -32,6 +33,7 @@ var Boot = cc.Class({
     },
 
     initModules : function(){
+        cc.log("initModules");
         this.initStates();
     },
 
@@ -43,27 +45,7 @@ var Boot = cc.Class({
     loadProto :function(){
         MessageBuilder.instance().loadProtos(["protocol/connect", "protocol/game"], function(){
             this.stateManager.changeState("LoginState");
-        });
-    },
-
-    onStartButtonClick(node){
-        // var user = {
-        //     name : "asdffasdf",
-        //     password : "111111111",
-        //     addr : "52541aaaa"
-        // }
-        // Network.instance().httpPost("http://localhost:12345/auth", JSON.stringify(user), function(err, data){
-        //     cc.log(data);
-        // }, false);
-
-        // var protoFile = "protocol/KConnectProto";  
-        // cc.loader.loadRes(protoFile, function (err, proto){  
-        //     cc.log("loadfinish");  
-        
-        //     var Builder = ProtoBuf.protoFromString(proto);  
-        // });  
-
-
+        }.bind(this));
     }
 });
 
