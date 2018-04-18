@@ -1,22 +1,49 @@
 
-var app = require("App")
-var Network = require("Network/Network")
-var MessageBuilder = require("Network/MessageBuilder")
-var LoginManager = require("Session/LoginManager")
+var app = require("App");
+var Network = require("Network/Network");
+var MessageBuilder = require("Network/MessageBuilder");
+var StateManager = require("Common/StateManager");
+var LoginState = require("GameState/LoginState");
 
-cc.Class({
+var Boot = cc.Class({
     extends: cc.Component,
+    stateManager : null,
 
-    onLoad (){
-        
+    statics :{
+        _instance : null,
+        instance () {
+            if(this._instance == null){
+                this._instance = new this();
+            }
+            return this._instance;
+        }
     },
 
-    start () {
-        
+    onLoad : function(){
+        cc.game.addPersistRootNode(this.node);
     },
 
-    update (dt) {
+    start : function() {
+        this.initModules();
+    },
 
+    update : function(dt) {
+
+    },
+
+    initModules : function(){
+        this.initStates();
+    },
+
+    initStates : function(){
+        this.stateManager = new StateManager();
+        this.stateManager.register("LoginState", new LoginState());
+    },
+
+    loadProto :function(){
+        MessageBuilder.instance().loadProtos(["protocol/connect", "protocol/game"], function(){
+            this.stateManager.changeState("LoginState");
+        });
     },
 
     onStartButtonClick(node){
@@ -36,10 +63,8 @@ cc.Class({
         //     var Builder = ProtoBuf.protoFromString(proto);  
         // });  
 
-        MessageBuilder.instance().loadProtos(["protocol/connect", "protocol/game"], function(){
-            LoginManager.instance().login(function(isSuccess, errType, errInfo){
-                cc.log("isSuccess : " + isSuccess + ", errType : " + errType + ", errInfo" + errInfo);
-            });
-        });
+
     }
 });
+
+module.exports = Boot
